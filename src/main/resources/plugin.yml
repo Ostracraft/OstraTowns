@@ -1,0 +1,7 @@
+name: OstraTowns
+description: Private plugin for Ostracraft server
+author: Skylyxx
+website: https://ostracraft.jimdofree.com
+main: fr.ostracraft.towns.OstraTowns
+version: @version@
+api-version: @apiVersion@
