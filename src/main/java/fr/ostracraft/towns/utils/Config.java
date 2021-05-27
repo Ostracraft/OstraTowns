@@ -46,16 +46,8 @@ public enum Config {
         }
     }
 
-    public Object get() {
-        return value;
-    }
-
-    public String getAsString() {
-        return String.valueOf(get());
-    }
-
-    public int getAsInteger() {
-        return Integer.parseInt(getAsString());
+    public <T> T get() {
+        return (T) this.value;
     }
 
     public void set(Object value) {

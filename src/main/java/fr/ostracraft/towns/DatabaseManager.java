@@ -9,12 +9,12 @@ import java.sql.SQLException;
 public class DatabaseManager {
 
     private static HikariDataSource dataSource;
-    private static final String DB_HOST = Config.DB_HOST.getAsString();
-    private static final String DB_PORT = Config.DB_PORT.getAsString();
-    private static final String DB_USER = Config.DB_USER.getAsString();
-    private static final String DB_PASSWORD = Config.DB_PASSWORD.getAsString();
-    private static final String DB_DATABASE = Config.DB_DATABASE.getAsString();
-    private static final String DB_SSL = Config.DB_SSL.getAsString();
+    private static final String DB_HOST = Config.DB_HOST.get();
+    private static final int DB_PORT = Config.DB_PORT.get();
+    private static final String DB_USER = Config.DB_USER.get();
+    private static final String DB_PASSWORD = Config.DB_PASSWORD.get();
+    private static final String DB_DATABASE = Config.DB_DATABASE.get();
+    private static final boolean DB_SSL = Config.DB_SSL.get();
 
     public static void init() {
         dataSource = new HikariDataSource();
