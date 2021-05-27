@@ -15,9 +15,6 @@ public enum Config {
     DB_SSL(false),
     ;
 
-    private static YamlConfiguration config;
-    private static File file;
-
     private Object value;
 
     Config(Object value) {
@@ -26,12 +23,12 @@ public enum Config {
 
     public static boolean load() {
         try {
-            file = new File(OstraTowns.get().getDataFolder(), "config.yml");
+            File file = new File(OstraTowns.get().getDataFolder(), "config.yml");
             if (!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
+                if(!file.getParentFile().mkdirs() || !file.createNewFile())
+                    return false;
             }
-            config = new YamlConfiguration();
+            YamlConfiguration config = new YamlConfiguration();
             config.load(file);
             for (Config value : Config.values()) {
                 if (!FileUtil.addDefault(config, value.toString(), value.get())) {
@@ -46,6 +43,7 @@ public enum Config {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T get() {
         return (T) this.value;
     }

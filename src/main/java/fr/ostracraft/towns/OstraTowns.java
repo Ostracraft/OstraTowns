@@ -8,8 +8,10 @@ public class OstraTowns extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Config.load();
-        Messages.load();
+        if(!Config.load())
+            getLogger().severe("Failed to load config ! Using default values.");
+        if(!Messages.load())
+            getLogger().severe("Failed to load messages ! Using default values.");
         DatabaseManager.init();
     }
 

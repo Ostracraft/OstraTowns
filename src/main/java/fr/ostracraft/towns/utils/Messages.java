@@ -13,9 +13,6 @@ public enum Messages {
     INVALID_ARGUMENTS("%prefix% &cErreur de syntaxe: {0}"),
     ;
 
-    private static YamlConfiguration config;
-    private static File file;
-
     private String value;
 
     Messages(String value) {
@@ -24,12 +21,12 @@ public enum Messages {
 
     public static boolean load() {
         try {
-            file = new File(OstraTowns.get().getDataFolder(), "messages.yml");
+            File file = new File(OstraTowns.get().getDataFolder(), "messages.yml");
             if (!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
+                if(!file.getParentFile().mkdirs() || !file.createNewFile())
+                    return false;
             }
-            config = new YamlConfiguration();
+            YamlConfiguration config = new YamlConfiguration();
             config.load(file);
             for (Messages value : Messages.values()) {
                 if (!FileUtil.addDefault(config, value.toString(), value.get())) {
