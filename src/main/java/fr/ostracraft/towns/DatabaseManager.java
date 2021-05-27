@@ -3,7 +3,9 @@ package fr.ostracraft.towns;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.ProxyConnection;
 import fr.ostracraft.towns.utils.Config;
+import org.jetbrains.annotations.Nullable;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DatabaseManager {
@@ -17,6 +19,9 @@ public class DatabaseManager {
     private static final boolean DB_SSL = Config.DB_SSL.get();
 
     public static void init() {
+        /*
+         * Connecting to the database
+         */
         dataSource = new HikariDataSource();
         dataSource.setJdbcUrl("jdbc:mysql://" +
                 DB_HOST +
@@ -29,12 +34,36 @@ public class DatabaseManager {
         );
         dataSource.setUsername(DB_USER);
         dataSource.setPassword(DB_PASSWORD);
+
+        /*
+         * Generating tables
+         */
+        ProxyConnection connection = getConnection();
+        try {
+            assert connection != null;
+            PreparedStatement townsStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "towns`(`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`), name TEXT, mayor TEXT, assistants TEXT, members TEXT, spawn TEXT, creation BIGINT);");
+            townsStatement.execute();
+
+            PreparedStatement townBlocksStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "townblocks`(`x` int, `z` int, `townId` int);");
+            townBlocksStatement.execute();
+
+            PreparedStatement residentsStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "residents`(`uuid` TEXT, `username` TEXT, `townId` int);");
+            residentsStatement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 
-    public static ProxyConnection getConnection() throws SQLException {
-        if(dataSource == null)
+    @Nullable
+    public static ProxyConnection getConnection() {
+        if (dataSource == null)
             init();
-        return (ProxyConnection) dataSource.getConnection();
+        try {
+            return (ProxyConnection) dataSource.getConnection();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return null;
     }
 
 }

@@ -13,6 +13,7 @@ public enum Config {
     DB_PASSWORD("password"),
     DB_DATABASE("db_ostracraft"),
     DB_SSL(false),
+    DB_PREFIX("ot_"),
     ;
 
     private Object value;
@@ -21,11 +22,13 @@ public enum Config {
         this.value = value;
     }
 
+    @SuppressWarnings("all")
     public static boolean load() {
         try {
             File file = new File(OstraTowns.get().getDataFolder(), "config.yml");
             if (!file.exists()) {
-                if(!file.getParentFile().mkdirs() || !file.createNewFile())
+                file.getParentFile().mkdirs();
+                if(!file.createNewFile())
                     return false;
             }
             YamlConfiguration config = new YamlConfiguration();
