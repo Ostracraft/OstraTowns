@@ -11,6 +11,8 @@ public enum Messages {
 
     NO_PERM("%prefix% &cVous n'avez pas la permission requise !"),
     INVALID_ARGUMENTS("%prefix% &cErreur de syntaxe: {0}"),
+
+    ERROR_JOIN_1("%prefix% &cUne erreur est survenue, merci de contacter le staff &e(Code erreur &6TOWNS_JOIN_11E°"),
     ;
 
     private String value;
