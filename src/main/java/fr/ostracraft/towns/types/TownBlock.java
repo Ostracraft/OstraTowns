@@ -33,10 +33,9 @@ public class TownBlock {
         if(loadedBlocks.containsKey(pair))
             return loadedBlocks.get(pair);
         ProxyConnection connection = DatabaseManager.getConnection();
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "townblocks` WHERE `x`=" + chunk.getX() + " AND `z`=" + chunk.getZ());
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "townblocks` WHERE `x`=" + chunk.getX() + " AND `z`=" + chunk.getZ())) {
             ResultSet resultSet = statement.executeQuery();
-            if(!resultSet.next())
+            if (!resultSet.next())
                 return new TownBlock(chunk.getX(), chunk.getZ(), 0);
             return new TownBlock(chunk.getX(), chunk.getZ(), resultSet.getInt("townId"));
         } catch (SQLException throwable) {

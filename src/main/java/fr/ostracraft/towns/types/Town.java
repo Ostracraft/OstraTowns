@@ -68,13 +68,12 @@ public class Town {
     @Nullable
     public static Town getTownNamed(String name) {
         ProxyConnection connection = DatabaseManager.getConnection();
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`=" + name);
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`=" + name)) {
             ResultSet resultSet = statement.executeQuery();
-            if(!resultSet.next())
+            if (!resultSet.next())
                 return null;
 
-            if(loadedTowns.containsKey(resultSet.getInt("id")))
+            if (loadedTowns.containsKey(resultSet.getInt("id")))
                 return loadedTowns.get(resultSet.getInt("id"));
 
             Town town = new Town(
