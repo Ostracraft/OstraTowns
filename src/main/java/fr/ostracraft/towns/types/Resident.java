@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class Resident {
@@ -28,8 +27,8 @@ public class Resident {
     }
 
     @Nullable
-    public static Resident getResident(String usernameOrUUID) {
-        if(loadedResidents.containsKey(usernameOrUUID))
+    public static Resident getResident(String usernameOrUUID, boolean force) {
+        if (loadedResidents.containsKey(usernameOrUUID) && !force)
             return loadedResidents.get(usernameOrUUID);
         ProxyConnection connection = DatabaseManager.getConnection();
         try {
@@ -59,8 +58,13 @@ public class Resident {
         return null;
     }
 
+
     public static Resident getResident(Player player) {
-        return getResident(player.getUniqueId().toString());
+        return getResident(player.getUniqueId().toString(), false);
+    }
+
+    public static Resident getResident(Player player, boolean force) {
+        return getResident(player.getUniqueId().toString(), force);
     }
 
     public static Resident createResident(Player player) {
@@ -72,8 +76,8 @@ public class Resident {
             statement.setString(2, resident.getUsername());
             statement.setInt(3, resident.getTownId());
             statement.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         loadedResidents.put(player.getUniqueId().toString(), resident);
         return resident;

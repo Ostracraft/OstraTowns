@@ -63,6 +63,14 @@ public class TownBlock {
 
     public TownBlock setTownId(int townId) {
         this.townId = townId;
+
+        ProxyConnection connection = DatabaseManager.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_townblocks` SET `townId`='" + townId + "' WHERE `x`='" + getX() + "' AND `z`='" + getZ() + "'")) {
+            statement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
         return this;
     }
 

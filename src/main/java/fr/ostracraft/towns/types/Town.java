@@ -3,6 +3,7 @@ package fr.ostracraft.towns.types;
 import com.zaxxer.hikari.pool.ProxyConnection;
 import fr.ostracraft.towns.DatabaseManager;
 import fr.ostracraft.towns.utils.Config;
+import fr.ostracraft.towns.utils.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
@@ -17,13 +18,13 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class Town {
 
-    private int id;
+    private final int id;
     private String name;
     private String mayor;
     private List<String> assistants;
     private List<String> members;
     private Location spawn;
-    private long creation;
+    private final long creation;
 
     private static HashMap<Integer, Town> loadedTowns = new HashMap<>();
 
@@ -82,7 +83,7 @@ public class Town {
                     resultSet.getString("mayor"),
                     Arrays.asList(resultSet.getString("assistants").split("#")),
                     Arrays.asList(resultSet.getString("members").split("#")),
-                    Bukkit.getWorlds().get(0).getSpawnLocation(),
+                    StringUtil.stringToLocation(resultSet.getString("spawn")),
                     resultSet.getLong("creation")
             );
             loadedTowns.put(town.getId(), town);
@@ -101,17 +102,20 @@ public class Town {
         return id;
     }
 
-    public Town setId(int id) {
-        this.id = id;
-        return this;
-    }
-
     public String getName() {
         return name;
     }
 
     public Town setName(String name) {
         this.name = name;
+
+        ProxyConnection connection = DatabaseManager.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `name`='" + name + "' WHERE `id`='" + getId() + "'")) {
+            statement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
         return this;
     }
 
@@ -121,6 +125,14 @@ public class Town {
 
     public Town setMayor(String mayor) {
         this.mayor = mayor;
+
+        ProxyConnection connection = DatabaseManager.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `mayor`='" + mayor + "' WHERE `id`='" + getId() + "'")) {
+            statement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
         return this;
     }
 
@@ -130,6 +142,14 @@ public class Town {
 
     public Town setAssistants(List<String> assistants) {
         this.assistants = assistants;
+
+        ProxyConnection connection = DatabaseManager.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `assistants`='" + String.join("#", assistants) + "' WHERE `id`='" + getId() + "'")) {
+            statement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
         return this;
     }
 
@@ -139,25 +159,37 @@ public class Town {
 
     public Town setMembers(List<String> members) {
         this.members = members;
+
+        ProxyConnection connection = DatabaseManager.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `members`='" + String.join("#", members) + "' WHERE `id`='" + getId() + "'")) {
+            statement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
         return this;
     }
 
+    @Nullable
     public Location getSpawn() {
         return spawn;
     }
 
     public Town setSpawn(Location spawn) {
         this.spawn = spawn;
+
+        ProxyConnection connection = DatabaseManager.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `spawn`='" + StringUtil.locationToString(spawn) + "' WHERE `id`='" + getId() + "'")) {
+            statement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
         return this;
     }
 
     public long getCreation() {
         return creation;
-    }
-
-    public Town setCreation(long creation) {
-        this.creation = creation;
-        return this;
     }
 
     @Override

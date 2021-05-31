@@ -39,15 +39,12 @@ public class DatabaseManager {
          * Generating tables
          */
         ProxyConnection connection = getConnection();
-        try {
-            assert connection != null;
-            PreparedStatement townsStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "towns`(`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`), name TEXT, mayor TEXT, assistants TEXT, members TEXT, spawn TEXT, creation BIGINT);");
+        try (PreparedStatement townsStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "towns`(`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`), name TEXT, mayor TEXT, assistants TEXT, members TEXT, spawn TEXT, creation BIGINT);");
+             PreparedStatement townBlocksStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "townblocks`(`x` int, `z` int, `townId` int);");
+             PreparedStatement residentsStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "residents`(`uuid` TEXT, `username` TEXT, `townId` int);")
+        ) {
             townsStatement.execute();
-
-            PreparedStatement townBlocksStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "townblocks`(`x` int, `z` int, `townId` int);");
             townBlocksStatement.execute();
-
-            PreparedStatement residentsStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "residents`(`uuid` TEXT, `username` TEXT, `townId` int);");
             residentsStatement.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
