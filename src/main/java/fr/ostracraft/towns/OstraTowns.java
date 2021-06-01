@@ -13,9 +13,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class OstraTowns extends JavaPlugin {
 
     private CommandManager commandManager;
@@ -37,6 +37,7 @@ public class OstraTowns extends JavaPlugin {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void registerCommands() {
         this.commandManager = new CommandManager(this);
         List<Class<?>> classes = ReflectionUtil.getClasses(getClass().getPackageName() + ".commands");
