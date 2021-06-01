@@ -14,12 +14,14 @@ def subVersion = '.5'
 repositories {
     mavenCentral()
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
     compileOnly group: 'org.spigotmc', name: 'spigot-api', version: mcVersion + subVersion + '-R0.1-SNAPSHOT'
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
+    implementation group: 'com.github.BakaAless', name: 'CommandAPI', version: '868807870'
 }
 
 shadowJar {
