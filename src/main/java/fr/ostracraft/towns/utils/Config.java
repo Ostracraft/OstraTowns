@@ -14,6 +14,8 @@ public enum Config {
     DB_DATABASE("db_ostracraft"),
     DB_SSL(false),
     DB_PREFIX("ot_"),
+
+    TOWN_NAME_MAX_LENGHT(25),
     ;
 
     private Object value;

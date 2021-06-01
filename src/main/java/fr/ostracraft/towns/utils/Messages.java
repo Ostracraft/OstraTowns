@@ -18,6 +18,8 @@ public enum Messages {
     ERROR_JOIN_1("%prefix% &cUne erreur est survenue, merci de contacter le staff &e(Code erreur &6TOWNS_JOIN_11E°"),
 
     TOWN_CREATED("%prefix% &aVous avez créer la ville &e{0} &a!"),
+    TOWN_ALREADY_IN_TOWN("%prefix% &cVous faites déjà parti d'une ville !"),
+    TOWN_ALREADY_EXISTS("%prefix% &cUne ville avec ne nom existe déjà !"),
     ;
 
     private String value;
