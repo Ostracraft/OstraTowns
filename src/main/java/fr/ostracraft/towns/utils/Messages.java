@@ -10,9 +10,14 @@ public enum Messages {
     PREFIX("&a&lOstra&f&lCraft &6»"),
 
     NO_PERM("%prefix% &cVous n'avez pas la permission requise !"),
-    INVALID_ARGUMENTS("%prefix% &cErreur de syntaxe: {0}"),
+    EXECUTABLE_BY_CONSOLE("%prefix% &cCette commande ne peut être utilisée que par la console !"),
+    EXECUTABLE_BY_PLAYER("%prefix% &cCette commande ne peut être utilisée que par des joueurs !"),
+    INVALID_ARGUMENTS("%prefix% &cErreur de syntaxe: {0}."),
 
+    ERROR_UNKNOWN("%prefix% &cUne erreur inconnue est survenue !"),
     ERROR_JOIN_1("%prefix% &cUne erreur est survenue, merci de contacter le staff &e(Code erreur &6TOWNS_JOIN_11E°"),
+
+    TOWN_CREATED("%prefix% &aVous avez créer la ville &e{0} &a!"),
     ;
 
     private String value;

@@ -45,6 +45,13 @@ public class OstraTowns extends JavaPlugin {
             if(CommandRunner.class.isAssignableFrom(clazz))
                 this.commandManager.registerRunners((Class<? extends CommandRunner>) clazz);
         }
+        CommandManager.Messages.PREFIX_ERROR.setMessage(Messages.PREFIX.format());
+        CommandManager.Messages.ERROR_COMMAND_PERMISSION.setMessage(Messages.NO_PERM.format());
+        CommandManager.Messages.ERROR_COMMAND_EXECUTOR_CONSOLE.setMessage(Messages.EXECUTABLE_BY_CONSOLE.format());
+        CommandManager.Messages.ERROR_COMMAND_EXECUTOR_PLAYER.setMessage(Messages.EXECUTABLE_BY_PLAYER.format());
+        CommandManager.Messages.ERROR_COMMAND_UNKNOWN.setMessage(Messages.ERROR_UNKNOWN.format());
+        CommandManager.Messages.ERROR_COMMAND_NEXISTS.setMessage(Messages.ERROR_UNKNOWN.format());
+        CommandManager.Messages.ERROR_COMMAND_ARGUMENTS.setMessage(Messages.INVALID_ARGUMENTS.format("Il faut {1} arguments"));
     }
 
     private void registerListeners() {
