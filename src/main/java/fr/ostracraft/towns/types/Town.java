@@ -6,6 +6,7 @@ import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.PreparedStatement;
@@ -68,7 +69,7 @@ public class Town {
     @Nullable
     public static Town getTownNamed(String name) {
         ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`=" + name)) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`='" + name + "'")) {
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next())
                 return null;
@@ -93,6 +94,21 @@ public class Town {
         return null;
     }
 
+    public static Town createTown(String name, Player mayor) {
+        if (getTownNamed(name) != null)
+            throw new IllegalStateException("A town with named " + name + " already exists !");
+        ProxyConnection connection = DatabaseManager.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO `" + Config.DB_PREFIX.get() + "towns`(`name`, `mayor`, `creation`) VALUES (?, ?, ?)")) {
+            statement.setString(1, name);
+            statement.setString(2, mayor.getUniqueId().toString());
+            statement.setLong(3, System.currentTimeMillis());
+            statement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return getTownNamed(name);
+    }
+
     public static HashMap<Integer, Town> getLoadedTowns() {
         return loadedTowns;
     }
@@ -109,7 +125,7 @@ public class Town {
         this.name = name;
 
         ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `name`='" + name + "' WHERE `id`='" + getId() + "'")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `name`='" + name + "' WHERE `id`='" + getId() + "'")) {
             statement.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -126,7 +142,7 @@ public class Town {
         this.mayor = mayor;
 
         ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `mayor`='" + mayor + "' WHERE `id`='" + getId() + "'")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `mayor`='" + mayor + "' WHERE `id`='" + getId() + "'")) {
             statement.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -143,7 +159,7 @@ public class Town {
         this.assistants = assistants;
 
         ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `assistants`='" + String.join("#", assistants) + "' WHERE `id`='" + getId() + "'")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `assistants`='" + String.join("#", assistants) + "' WHERE `id`='" + getId() + "'")) {
             statement.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -160,7 +176,7 @@ public class Town {
         this.members = members;
 
         ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `members`='" + String.join("#", members) + "' WHERE `id`='" + getId() + "'")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `members`='" + String.join("#", members) + "' WHERE `id`='" + getId() + "'")) {
             statement.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -178,7 +194,7 @@ public class Town {
         this.spawn = spawn;
 
         ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_towns` SET `spawn`='" + StringUtil.locationToString(spawn) + "' WHERE `id`='" + getId() + "'")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `spawn`='" + StringUtil.locationToString(spawn) + "' WHERE `id`='" + getId() + "'")) {
             statement.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
