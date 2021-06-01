@@ -106,7 +106,7 @@ public class Resident {
         this.username = username;
 
         ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `ot_residents` SET `username`='" + username + "' WHERE `uuid`='" + getUuid() + "'")) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "residents` SET `username`='" + username + "' WHERE `uuid`='" + getUuid() + "'")) {
             statement.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -121,6 +121,14 @@ public class Resident {
 
     public Resident setTownId(int townId) {
         this.townId = townId;
+
+        ProxyConnection connection = DatabaseManager.getConnection();
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "residents` SET `townId`=" + townId + " WHERE `uuid`='" + getUuid() + "'")) {
+            statement.execute();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
         return this;
     }
 
