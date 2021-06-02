@@ -29,31 +29,32 @@ public class Resident {
     public static Resident getResident(String usernameOrUUID, boolean force) {
         if (loadedResidents.containsKey(usernameOrUUID) && !force)
             return loadedResidents.get(usernameOrUUID);
-
         String type;
         if (usernameOrUUID.length() > 16)
             type = "uuid";
         else
             type = "username";
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "residents` WHERE `" + type + "`=?", usernameOrUUID);
-
+        if (response == null)
+            return null;
         if (loadedResidents.containsKey(response.get("uuid")))
             return loadedResidents.get(response.get("uuid"));
-
         Resident resident = new Resident(
                 response.get("uuid"),
                 response.get("username"),
                 response.<Integer>get("townId")
         );
-
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(resident.getUuid()));
         if (!resident.getUsername().equalsIgnoreCase(offlinePlayer.getName()))
             resident.setUsername(offlinePlayer.getName());
-
         loadedResidents.put(resident.getUuid(), resident);
         return resident;
     }
 
+
+    public static Resident getResident(String usernameOrUUID) {
+        return getResident(usernameOrUUID, false);
+    }
 
     public static Resident getResident(Player player) {
         return getResident(player.getUniqueId().toString(), false);
@@ -96,6 +97,40 @@ public class Resident {
         this.townId = townId;
         DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "residents` SET `townId`=? WHERE `uuid`=?", townId, getUuid());
         return this;
+    }
+
+    public boolean isMayor() {
+        if (getTownId() < 1) {
+            return false;
+        }
+        Town town = Town.getTownById(getTownId());
+        return town.getMayor().equalsIgnoreCase(getUuid());
+    }
+
+    public boolean isAssistant() {
+        if (getTownId() < 1) {
+            return false;
+        }
+        Town town = Town.getTownById(getTownId());
+        return town.getAssistants().contains(getUuid());
+    }
+
+    public boolean isMember() {
+        if (getTownId() < 1) {
+            return false;
+        }
+        Town town = Town.getTownById(getTownId());
+        return town.getMembers().contains(getUuid());
+    }
+
+    public boolean isAbove(Resident target) {
+        if(this.isMayor())
+            return true;
+        if(this.isAssistant())
+            return target.isMayor() == target.isAssistant();
+        if(this.isMember())
+            return !target.isMayor() && !target.isAssistant() && !target.isMember();
+        return false;
     }
 
     @Override

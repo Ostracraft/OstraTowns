@@ -15,15 +15,21 @@ public enum Messages {
     INVALID_ARGUMENTS("%prefix% &cErreur de syntaxe: {0}."),
 
     ERROR_UNKNOWN("%prefix% &cUne erreur inconnue est survenue !"),
-    ERROR_JOIN_1("%prefix% &cUne erreur est survenue, merci de contacter le staff &e(Code erreur &6TOWNS_JOIN_11E°"),
+    ERROR_JOIN_1("%prefix% &cUne erreur est survenue, merci de contacter le staff &e(Code erreur &6TOWNS_JOIN_1&e)"),
 
     TOWN_CREATED("%prefix% &aVous avez créer la ville &e{0} &a!"),
     TOWN_ALREADY_IN_TOWN("%prefix% &cVous faites déjà parti d'une ville !"),
     TOWN_NOT_IN_TOWN("%prefix% &cVous ne faites pas parti d'une ville !"),
     TOWN_ALREADY_EXISTS("%prefix% &cUne ville avec ne nom existe déjà !"),
-    TOWN_CANNOT_LEAVE_MAYOR("%prefix% &cVous ne pouvez pas quitter votre ville, vous êtes le maire. Vous pouvez la supprimer avec &4/ville supprimer &cou alors définir un nouveau maire &4/ville <cmd pour maire>&c."),
+
+    TOWN_LEAVE_MAYOR("%prefix% &cVous ne pouvez pas quitter votre ville, vous êtes le maire. Vous pouvez la supprimer avec &4/ville supprimer &cou alors définir un nouveau maire &4/ville <cmd pour maire>&c."),
     TOWN_LEAVE_PLAYER("%prefix% &aVous avez quitté votre ville."),
     TOWN_LEAVE_OTHERS("%prefix% &e{0} &avient de quitter votre ville."),
+
+    TOWN_RANK_INSUFFICIENT("%prefix% &cVous n'avez pas le rang requis au sein de votre ville: &4{0}"),
+    TOWN_RANK_PROMOTION("%prefix% &e{0} &aa été promu &e{1} &apar &e{2} &a!"),
+    TOWN_RANK_GET_HEADER("%prefix% &aVoici les membres gradés de votre ville:"),
+    TOWN_RANK_GET_ITEM("&6- {0}&6: &a{1}"),
     ;
 
     private String value;
