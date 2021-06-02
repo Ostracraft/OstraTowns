@@ -45,11 +45,13 @@ public class Town {
         // TODO optimize assistants and members
         List<String> assistants = new ArrayList<>();
         for (String s : response.<String>get("assistants").split("#")) {
-            assistants.add(s);
+            if (s.trim().length() > 1)
+                assistants.add(s);
         }
         List<String> members = new ArrayList<>();
         for (String s : response.<String>get("members").split("#")) {
-            members.add(s);
+            if (s.trim().length() > 1)
+                members.add(s);
         }
         Town town = new Town(
                 id,
