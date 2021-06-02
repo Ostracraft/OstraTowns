@@ -32,12 +32,7 @@ public class TownLeaveSubCommand implements CommandRunner {
         town.removeMember(player.getUniqueId().toString());
         resident.setTownId(0);
         sender.sendMessage(Messages.TOWN_LEAVE_PLAYER.format());
-        for (Player player1 : Bukkit.getOnlinePlayers()) {
-            Resident resident1 = Resident.getResident(player1);
-            if (resident1.getTownId() == town.getId()) {
-                player1.sendMessage(Messages.TOWN_LEAVE_OTHERS.format(player.getName()));
-            }
-        }
+        town.messageAll(Messages.TOWN_LEAVE_OTHERS.format(player.getName()));
         return true;
     }
 

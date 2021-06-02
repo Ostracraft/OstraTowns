@@ -247,6 +247,15 @@ public class Town {
         return creation;
     }
 
+    public void messageAll(String message) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Resident resident = Resident.getResident(player);
+            if(resident.getTownId() == getId()) {
+                player.sendMessage(message);
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return "Town{" +
