@@ -12,9 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class Town {
@@ -49,12 +47,22 @@ public class Town {
             ResultSet resultSet = statement.executeQuery();
             if(!resultSet.next())
                 return null;
+
+            List<String> assistants = new ArrayList<>();
+            for (String s : resultSet.getString("assistants").split("#")) {
+                assistants.add(s);
+            }
+            List<String> members = new ArrayList<>();
+            for (String s : resultSet.getString("members").split("#")) {
+                members.add(s);
+            }
+
             Town town = new Town(
                     id,
                     resultSet.getString("name"),
                     resultSet.getString("mayor"),
-                    Arrays.asList(resultSet.getString("assistants").split("#")),
-                    Arrays.asList(resultSet.getString("members").split("#")),
+                    assistants,
+                    members,
                     Bukkit.getWorlds().get(0).getSpawnLocation(),
                     resultSet.getLong("creation")
             );
@@ -168,6 +176,22 @@ public class Town {
         return this;
     }
 
+    public Town addAssistant(String assistant) {
+        if (!this.assistants.contains(assistant)) {
+            this.assistants.add(assistant);
+            setAssistants(this.assistants);
+        }
+        return this;
+    }
+
+    public Town removeAssistant(String assistant) {
+        if (this.assistants.contains(assistant)) {
+            this.assistants.remove(assistant);
+            setAssistants(this.assistants);
+        }
+        return this;
+    }
+
     public List<String> getMembers() {
         return members;
     }
@@ -182,6 +206,22 @@ public class Town {
             throwable.printStackTrace();
         }
 
+        return this;
+    }
+
+    public Town addMember(String member) {
+        if (!this.members.contains(member)) {
+            this.members.add(member);
+            setMembers(this.members);
+        }
+        return this;
+    }
+
+    public Town removeMember(String member) {
+        if (this.members.contains(member)) {
+            this.members.remove(member);
+            setMembers(this.members);
+        }
         return this;
     }
 
