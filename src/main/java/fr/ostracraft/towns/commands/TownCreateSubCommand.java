@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 @RunSubCommand(command = "town", subCommand = {"create", "créer", "creer", "creation"}, executor = RunCommand.ExecutorType.PLAYERS)
-public class TownCreateCommand implements CommandRunner {
+public class TownCreateSubCommand implements CommandRunner {
 
     @Override
     public boolean run(CommandSender sender, List<String> args) {

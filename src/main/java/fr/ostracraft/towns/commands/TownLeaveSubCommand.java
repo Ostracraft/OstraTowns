@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 @RunSubCommand(command = "town", subCommand = {"leave", "quitter"}, executor = RunCommand.ExecutorType.PLAYERS)
-public class TownLeaveCommand implements CommandRunner {
+public class TownLeaveSubCommand implements CommandRunner {
 
     @Override
     public boolean run(CommandSender sender, List<String> args) {
