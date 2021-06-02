@@ -4,6 +4,7 @@ import fr.bakaaless.api.command.CommandRunner;
 import fr.bakaaless.api.command.annotations.RunCommand;
 import org.bukkit.command.CommandSender;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +19,6 @@ public class TownCommand implements CommandRunner {
 
     @Override
     public List<String> tabCompleter(CommandSender sender, List<String> args) {
-        return Collections.singletonList("create");
+        return Arrays.asList("create", "leave", "permission");
     }
 }
