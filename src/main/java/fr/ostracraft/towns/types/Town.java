@@ -40,6 +40,8 @@ public class Town {
         if (loadedTowns.containsKey(id))
             return loadedTowns.get(id);
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `id`=?", id);
+        if(response == null)
+            return null;
         // TODO optimize assistants and members
         List<String> assistants = new ArrayList<>();
         for (String s : response.<String>get("assistants").split("#")) {
@@ -65,6 +67,8 @@ public class Town {
     @Nullable
     public static Town getTownNamed(String name) {
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`=?", name);
+        if(response == null)
+            return null;
         if (loadedTowns.containsKey(response.get("id")))
             return loadedTowns.get(response.get("id"));
         // TODO optimize assistants and members

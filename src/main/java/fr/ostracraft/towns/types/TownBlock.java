@@ -30,7 +30,7 @@ public class TownBlock {
             return loadedBlocks.get(pair);
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "townblocks` WHERE `x`=? AND `z`=?", chunk.getX(), chunk.getZ());
         TownBlock townBlock;
-        if (response.isSet("townId")) {
+        if (response != null && response.isSet("townId")) {
             townBlock = new TownBlock(chunk.getX(), chunk.getZ(), response.get("townId"));
         } else {
             DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`,`townId`) VALUES(?, ?, ?)", chunk.getX(), chunk.getZ(), 0);
