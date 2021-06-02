@@ -22,7 +22,7 @@ public enum Messages {
     TOWN_NOT_IN_TOWN("%prefix% &cVous ne faites pas parti d'une ville !"),
     TOWN_ALREADY_EXISTS("%prefix% &cUne ville avec ne nom existe déjà !"),
 
-    TOWN_LEAVE_MAYOR("%prefix% &cVous ne pouvez pas quitter votre ville, vous êtes le maire. Vous pouvez la supprimer avec &4/ville supprimer &cou alors définir un nouveau maire &4/ville <cmd pour maire>&c."),
+    TOWN_LEAVE_MAYOR("%prefix% &cVous ne pouvez pas quitter votre ville, vous êtes le maire. Vous pouvez la supprimer avec &4/ville supprimer &cou alors définir un nouveau maire &4/ville permission set <joueur> maire&c."),
     TOWN_LEAVE_PLAYER("%prefix% &aVous avez quitté votre ville."),
     TOWN_LEAVE_OTHERS("%prefix% &e{0} &avient de quitter votre ville."),
 
