@@ -42,8 +42,8 @@ public class DatabaseManager {
          * Generating tables
          */
         send("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "towns`(`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`), name TEXT, mayor TEXT, assistants TEXT DEFAULT '', members TEXT DEFAULT '', spawn TEXT DEFAULT '', creation BIGINT);");
-        send("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "townblocks`(`x` int, `z` int, `townId` int);");
-        send("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "residents`(`uuid` TEXT, `username` TEXT, `townId` int);");
+        send("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "townblocks`(`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`), `x` int, `z` int, `townId` int);");
+        send("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "residents`(`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`), `uuid` TEXT, `username` TEXT, `townId` int);");
     }
 
     @Nullable
