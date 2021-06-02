@@ -1,6 +1,5 @@
 package fr.ostracraft.towns.types;
 
-import com.zaxxer.hikari.pool.ProxyConnection;
 import fr.ostracraft.towns.DatabaseManager;
 import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.StringUtil;
@@ -9,10 +8,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class Town {
@@ -25,7 +23,7 @@ public class Town {
     private Location spawn;
     private final long creation;
 
-    private static HashMap<Integer, Town> loadedTowns = new HashMap<>();
+    private static final HashMap<Integer, Town> loadedTowns = new HashMap<>();
 
     Town(int id, String name, String mayor, List<String> assistants, List<String> members, Location spawn, long creation) {
         this.id = id;
@@ -39,81 +37,62 @@ public class Town {
 
     @Nullable
     public static Town getTownById(int id) {
-        if(loadedTowns.containsKey(id))
+        if (loadedTowns.containsKey(id))
             return loadedTowns.get(id);
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `id`=" + id);
-            ResultSet resultSet = statement.executeQuery();
-            if(!resultSet.next())
-                return null;
-
-            List<String> assistants = new ArrayList<>();
-            for (String s : resultSet.getString("assistants").split("#")) {
-                assistants.add(s);
-            }
-            List<String> members = new ArrayList<>();
-            for (String s : resultSet.getString("members").split("#")) {
-                members.add(s);
-            }
-
-            Town town = new Town(
-                    id,
-                    resultSet.getString("name"),
-                    resultSet.getString("mayor"),
-                    assistants,
-                    members,
-                    Bukkit.getWorlds().get(0).getSpawnLocation(),
-                    resultSet.getLong("creation")
-            );
-            loadedTowns.put(town.getId(), town);
-            return town;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `id`=?", id);
+        // TODO optimize assistants and members
+        List<String> assistants = new ArrayList<>();
+        for (String s : response.<String>get("assistants").split("#")) {
+            assistants.add(s);
         }
-        return null;
+        List<String> members = new ArrayList<>();
+        for (String s : response.<String>get("members").split("#")) {
+            members.add(s);
+        }
+        Town town = new Town(
+                id,
+                response.get("name"),
+                response.get("mayor"),
+                assistants,
+                members,
+                StringUtil.stringToLocation(response.get("spawn")),
+                response.get("creation")
+        );
+        loadedTowns.put(town.getId(), town);
+        return town;
     }
 
     @Nullable
     public static Town getTownNamed(String name) {
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`='" + name + "'")) {
-            ResultSet resultSet = statement.executeQuery();
-            if (!resultSet.next())
-                return null;
-
-            if (loadedTowns.containsKey(resultSet.getInt("id")))
-                return loadedTowns.get(resultSet.getInt("id"));
-
-            Town town = new Town(
-                    resultSet.getInt("id"),
-                    name,
-                    resultSet.getString("mayor"),
-                    Arrays.asList(resultSet.getString("assistants").split("#")),
-                    Arrays.asList(resultSet.getString("members").split("#")),
-                    StringUtil.stringToLocation(resultSet.getString("spawn")),
-                    resultSet.getLong("creation")
-            );
-            loadedTowns.put(town.getId(), town);
-            return town;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`=?", name);
+        if (loadedTowns.containsKey(response.get("id")))
+            return loadedTowns.get(response.get("id"));
+        // TODO optimize assistants and members
+        List<String> assistants = new ArrayList<>();
+        for (String s : response.<String>get("assistants").split("#")) {
+            assistants.add(s);
         }
-        return null;
+        List<String> members = new ArrayList<>();
+        for (String s : response.<String>get("members").split("#")) {
+            members.add(s);
+        }
+        Town town = new Town(
+                response.get("id"),
+                name,
+                response.get("mayor"),
+                assistants,
+                members,
+                StringUtil.stringToLocation(response.get("spawn")),
+                response.get("creation")
+        );
+        loadedTowns.put(town.getId(), town);
+        return town;
     }
 
     public static Town createTown(String name, Player mayor) {
         if (getTownNamed(name) != null)
             throw new IllegalStateException("A town with named " + name + " already exists !");
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO `" + Config.DB_PREFIX.get() + "towns`(`name`, `mayor`, `creation`) VALUES (?, ?, ?)")) {
-            statement.setString(1, name);
-            statement.setString(2, mayor.getUniqueId().toString());
-            statement.setLong(3, System.currentTimeMillis());
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
+        DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "towns`(`name`, `mayor`, `creation`) VALUES (?, ?, ?)", name, mayor.getUniqueId().toString(), System.currentTimeMillis());
         return getTownNamed(name);
     }
 
@@ -131,14 +110,7 @@ public class Town {
 
     public Town setName(String name) {
         this.name = name;
-
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `name`='" + name + "' WHERE `id`='" + getId() + "'")) {
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `name`=? WHERE `id`=?", name, getId());
         return this;
     }
 
@@ -148,14 +120,7 @@ public class Town {
 
     public Town setMayor(String mayor) {
         this.mayor = mayor;
-
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `mayor`='" + mayor + "' WHERE `id`='" + getId() + "'")) {
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `mayor`=? WHERE `id`=?", mayor, getId());
         return this;
     }
 
@@ -165,14 +130,7 @@ public class Town {
 
     public Town setAssistants(List<String> assistants) {
         this.assistants = assistants;
-
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `assistants`='" + String.join("#", assistants) + "' WHERE `id`='" + getId() + "'")) {
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `assistants`=? WHERE `id`=?", String.join("#", assistants), getId());
         return this;
     }
 
@@ -198,14 +156,7 @@ public class Town {
 
     public Town setMembers(List<String> members) {
         this.members = members;
-
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `members`='" + String.join("#", members) + "' WHERE `id`='" + getId() + "'")) {
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `members`=? WHERE `id`=?", String.join("#", members), getId());
         return this;
     }
 
@@ -232,14 +183,7 @@ public class Town {
 
     public Town setSpawn(Location spawn) {
         this.spawn = spawn;
-
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `spawn`='" + StringUtil.locationToString(spawn) + "' WHERE `id`='" + getId() + "'")) {
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `spawn`=? WHERE `id`=?", StringUtil.locationToString(getSpawn()), getId());
         return this;
     }
 

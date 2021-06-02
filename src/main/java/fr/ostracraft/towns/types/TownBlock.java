@@ -1,15 +1,11 @@
 package fr.ostracraft.towns.types;
 
-import com.zaxxer.hikari.pool.ProxyConnection;
 import fr.ostracraft.towns.DatabaseManager;
 import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.Pair;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
@@ -30,18 +26,18 @@ public class TownBlock {
         assert location.getWorld() != null;
         Chunk chunk = location.getWorld().getChunkAt(location);
         Pair<Integer, Integer> pair = new Pair<>(chunk.getX(), chunk.getZ());
-        if(loadedBlocks.containsKey(pair))
+        if (loadedBlocks.containsKey(pair))
             return loadedBlocks.get(pair);
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "townblocks` WHERE `x`=" + chunk.getX() + " AND `z`=" + chunk.getZ())) {
-            ResultSet resultSet = statement.executeQuery();
-            if (!resultSet.next())
-                return new TownBlock(chunk.getX(), chunk.getZ(), 0);
-            return new TownBlock(chunk.getX(), chunk.getZ(), resultSet.getInt("townId"));
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "townblocks` WHERE `x`=? AND `z`=?", chunk.getX(), chunk.getZ());
+        TownBlock townBlock;
+        if (response.isSet("townId")) {
+            townBlock = new TownBlock(chunk.getX(), chunk.getZ(), response.get("townId"));
+        } else {
+            DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`,`townId`) VALUES(?, ?, ?)", chunk.getX(), chunk.getZ(), 0);
+            townBlock = new TownBlock(chunk.getX(), chunk.getZ(), 0);
         }
-        return new TownBlock(chunk.getX(), chunk.getZ(), 0);
+        loadedBlocks.put(new Pair<>(chunk.getX(), chunk.getZ()), townBlock);
+        return townBlock;
     }
 
     public static HashMap<Pair<Integer, Integer>, TownBlock> getLoadedBlocks() {
@@ -62,14 +58,7 @@ public class TownBlock {
 
     public TownBlock setTownId(int townId) {
         this.townId = townId;
-
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "_townblocks` SET `townId`='" + townId + "' WHERE `x`='" + getX() + "' AND `z`='" + getZ() + "'")) {
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `townId`=? WHERE `x`=? AND `z`=?", townId, x, z);
         return this;
     }
 

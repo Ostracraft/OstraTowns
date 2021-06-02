@@ -2,11 +2,14 @@ package fr.ostracraft.towns;
 
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.ProxyConnection;
+import fr.ostracraft.towns.types.DatabaseResponse;
 import fr.ostracraft.towns.utils.Config;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class DatabaseManager {
 
@@ -38,17 +41,9 @@ public class DatabaseManager {
         /*
          * Generating tables
          */
-        ProxyConnection connection = getConnection();
-        try (PreparedStatement townsStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "towns`(`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`), name TEXT, mayor TEXT, assistants TEXT DEFAULT '', members TEXT DEFAULT '', spawn TEXT DEFAULT '', creation BIGINT);");
-             PreparedStatement townBlocksStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "townblocks`(`x` int, `z` int, `townId` int);");
-             PreparedStatement residentsStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "residents`(`uuid` TEXT, `username` TEXT, `townId` int);")
-        ) {
-            townsStatement.execute();
-            townBlocksStatement.execute();
-            residentsStatement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
+        send("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "towns`(`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`), name TEXT, mayor TEXT, assistants TEXT DEFAULT '', members TEXT DEFAULT '', spawn TEXT DEFAULT '', creation BIGINT);");
+        send("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "townblocks`(`x` int, `z` int, `townId` int);");
+        send("CREATE TABLE IF NOT EXISTS `" + Config.DB_PREFIX.get() + "residents`(`uuid` TEXT, `username` TEXT, `townId` int);");
     }
 
     @Nullable
@@ -61,6 +56,45 @@ public class DatabaseManager {
             throwable.printStackTrace();
         }
         return null;
+    }
+
+    public static DatabaseResponse get(String sql, Object... args) {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        try {
+            ProxyConnection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            for (int i = 0; i < args.length; i++) {
+                statement.setObject(i + 1, args[i]);
+            }
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next())
+                return null;
+            for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                String name = resultSet.getMetaData().getColumnName(i + 1);
+                hashMap.put(name, resultSet.getObject(name));
+            }
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return new DatabaseResponse(hashMap);
+    }
+
+    public static void send(String sql, Object... args) {
+        try {
+            ProxyConnection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            for (int i = 0; i < args.length; i++) {
+                statement.setObject(i + 1, args[i]);
+            }
+            statement.execute();
+            statement.close();
+            connection.close();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 
 }

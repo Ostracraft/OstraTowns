@@ -1,6 +1,5 @@
 package fr.ostracraft.towns.types;
 
-import com.zaxxer.hikari.pool.ProxyConnection;
 import fr.ostracraft.towns.DatabaseManager;
 import fr.ostracraft.towns.utils.Config;
 import org.bukkit.Bukkit;
@@ -8,9 +7,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -33,37 +29,29 @@ public class Resident {
     public static Resident getResident(String usernameOrUUID, boolean force) {
         if (loadedResidents.containsKey(usernameOrUUID) && !force)
             return loadedResidents.get(usernameOrUUID);
-        ProxyConnection connection = DatabaseManager.getConnection();
+
         String type;
         if (usernameOrUUID.length() > 16)
             type = "uuid";
         else
             type = "username";
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM `" + Config.DB_PREFIX.get() + "residents` WHERE `" + type + "`='" + usernameOrUUID + "'");) {
-            ResultSet resultSet = statement.executeQuery();
-            if (!resultSet.next())
-                return null;
+        DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "residents` WHERE `" + type + "`=?", usernameOrUUID);
 
-            if (loadedResidents.containsKey(resultSet.getString("uuid")))
-                return loadedResidents.get(resultSet.getString("uuid"));
+        if (loadedResidents.containsKey(response.get("uuid")))
+            return loadedResidents.get(response.get("uuid"));
 
-            Resident resident = new Resident(
-                    resultSet.getString("uuid"),
-                    resultSet.getString("username"),
-                    resultSet.getInt("townId")
-            );
+        Resident resident = new Resident(
+                response.get("uuid"),
+                response.get("username"),
+                response.<Integer>get("townId")
+        );
 
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(resident.getUuid()));
+        if (!resident.getUsername().equalsIgnoreCase(offlinePlayer.getName()))
+            resident.setUsername(offlinePlayer.getName());
 
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(resident.getUuid()));
-            if(!resident.getUsername().equalsIgnoreCase(offlinePlayer.getName()))
-                resident.setUsername(offlinePlayer.getName());
-
-            loadedResidents.put(resident.getUuid(), resident);
-            return resident;
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return null;
+        loadedResidents.put(resident.getUuid(), resident);
+        return resident;
     }
 
 
@@ -77,15 +65,7 @@ public class Resident {
 
     public static Resident createResident(Player player) {
         Resident resident = new Resident(player.getUniqueId().toString(), player.getName(), 0);
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO `" + Config.DB_PREFIX.get() + "residents`(`uuid`, `username`, `townId`) VALUES(?, ?, ?)")) {
-            statement.setString(1, resident.getUuid());
-            statement.setString(2, resident.getUsername());
-            statement.setInt(3, resident.getTownId());
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
+        DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "residents`(`uuid`, `username`, `townId`) VALUES(?, ?, ?)", resident.getUuid(), resident.getUsername(), resident.getTownId());
         loadedResidents.put(player.getUniqueId().toString(), resident);
         return resident;
     }
@@ -104,14 +84,7 @@ public class Resident {
 
     public Resident setUsername(String username) {
         this.username = username;
-
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "residents` SET `username`='" + username + "' WHERE `uuid`='" + getUuid() + "'")) {
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "residents` SET `username`=? WHERE `uuid`=?", username, getUuid());
         return this;
     }
 
@@ -121,14 +94,7 @@ public class Resident {
 
     public Resident setTownId(int townId) {
         this.townId = townId;
-
-        ProxyConnection connection = DatabaseManager.getConnection();
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + Config.DB_PREFIX.get() + "residents` SET `townId`=" + townId + " WHERE `uuid`='" + getUuid() + "'")) {
-            statement.execute();
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "residents` SET `townId`=? WHERE `uuid`=?", townId, getUuid());
         return this;
     }
 
