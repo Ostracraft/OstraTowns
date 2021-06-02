@@ -6,7 +6,6 @@ import fr.bakaaless.api.command.annotations.RunSubCommand;
 import fr.ostracraft.towns.types.Resident;
 import fr.ostracraft.towns.types.Town;
 import fr.ostracraft.towns.utils.Messages;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -25,7 +24,7 @@ public class TownLeaveSubCommand implements CommandRunner {
         }
         Town town = Town.getTownById(resident.getTownId());
         if (town.getMayor().equalsIgnoreCase(player.getUniqueId().toString())) {
-            sender.sendMessage(Messages.TOWN_CANNOT_LEAVE_MAYOR.format());
+            sender.sendMessage(Messages.TOWN_LEAVE_MAYOR.format());
             return true;
         }
         town.removeAssistant(player.getUniqueId().toString());
