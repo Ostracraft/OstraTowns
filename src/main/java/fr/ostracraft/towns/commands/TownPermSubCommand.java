@@ -7,12 +7,10 @@ import fr.ostracraft.towns.types.Resident;
 import fr.ostracraft.towns.types.Town;
 import fr.ostracraft.towns.types.TownRank;
 import fr.ostracraft.towns.utils.Messages;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 // /town (perm|permission) -> gui
