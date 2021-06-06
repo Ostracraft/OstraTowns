@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,17 +43,10 @@ public class Town {
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `id`=?", id);
         if(response == null)
             return null;
-        // TODO optimize assistants and members
         List<String> assistants = new ArrayList<>();
-        for (String s : response.<String>get("assistants").split("#")) {
-            if (s.trim().length() > 1)
-                assistants.add(s);
-        }
+        Collections.addAll(assistants, response.<String>get("assistants").split("#"));
         List<String> members = new ArrayList<>();
-        for (String s : response.<String>get("members").split("#")) {
-            if (s.trim().length() > 1)
-                members.add(s);
-        }
+        Collections.addAll(members, response.<String>get("members").split("#"));
         Town town = new Town(
                 id,
                 response.get("name"),
@@ -73,15 +67,10 @@ public class Town {
             return null;
         if (loadedTowns.containsKey(response.get("id")))
             return loadedTowns.get(response.get("id"));
-        // TODO optimize assistants and members
         List<String> assistants = new ArrayList<>();
-        for (String s : response.<String>get("assistants").split("#")) {
-            assistants.add(s);
-        }
+        Collections.addAll(assistants, response.<String>get("assistants").split("#"));
         List<String> members = new ArrayList<>();
-        for (String s : response.<String>get("members").split("#")) {
-            members.add(s);
-        }
+        Collections.addAll(members, response.<String>get("members").split("#"));
         Town town = new Town(
                 response.get("id"),
                 name,
