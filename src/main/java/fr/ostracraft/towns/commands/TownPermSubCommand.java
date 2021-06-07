@@ -6,6 +6,7 @@ import fr.bakaaless.api.command.annotations.RunSubCommand;
 import fr.ostracraft.towns.types.Resident;
 import fr.ostracraft.towns.types.Town;
 import fr.ostracraft.towns.types.ResidentRank;
+import fr.ostracraft.towns.types.TownRank;
 import fr.ostracraft.towns.utils.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,6 +29,17 @@ public class TownPermSubCommand implements CommandRunner {
             player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
             return true;
         }
+
+        Town town = Town.getTownById(resident.getTownId());
+        if (town == null) {
+            player.sendMessage(Messages.ERROR_UNKNOWN.format());
+            return true;
+        }
+        if(town.getRank().equals(TownRank.CAMPEMENT)) {
+            player.sendMessage(Messages.TOWN_MINIMUM_BOURG.format());
+            return true;
+        }
+
         if (args.size() < 1) {
             sender.sendMessage(Messages.INVALID_ARGUMENTS.format("&4/ville permission <get/set>"));
             return true;
@@ -58,11 +70,6 @@ public class TownPermSubCommand implements CommandRunner {
             }
             if (residentRank == null) {
                 sender.sendMessage(Messages.INVALID_ARGUMENTS.format("Rang invalide: &4" + args.get(3) + "&c, rangs: maire/assistant/membre/nouveau"));
-                return true;
-            }
-            Town town = Town.getTownById(resident.getTownId());
-            if (town == null) {
-                player.sendMessage(Messages.ERROR_UNKNOWN.format());
                 return true;
             }
             switch (residentRank) {
@@ -119,7 +126,6 @@ public class TownPermSubCommand implements CommandRunner {
             }
 
         } else if (args.get(1).equalsIgnoreCase("get")) {
-            Town town = Town.getTownById(resident.getTownId());
             String assistants = String.join(", ", town.getAssistants().stream().map(s -> Resident.getResident(s).getUsername()).collect(Collectors.toList()));
             String members = String.join(", ", town.getMembers().stream().map(s -> Resident.getResident(s).getUsername()).collect(Collectors.toList()));
 

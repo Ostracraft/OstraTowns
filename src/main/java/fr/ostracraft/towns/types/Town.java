@@ -22,17 +22,19 @@ public class Town {
     private List<String> assistants;
     private List<String> members;
     private Location spawn;
+    private TownRank rank;
     private final long creation;
 
     private static final HashMap<Integer, Town> loadedTowns = new HashMap<>();
 
-    Town(int id, String name, String mayor, List<String> assistants, List<String> members, Location spawn, long creation) {
+    Town(int id, String name, String mayor, List<String> assistants, List<String> members, Location spawn, TownRank rank, long creation) {
         this.id = id;
         this.name = name;
         this.mayor = mayor;
         this.assistants = assistants;
         this.members = members;
         this.spawn = spawn;
+        this.rank = rank;
         this.creation = creation;
     }
 
@@ -41,12 +43,18 @@ public class Town {
         if (loadedTowns.containsKey(id))
             return loadedTowns.get(id);
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `id`=?", id);
-        if(response == null)
+        if (response == null)
             return null;
         List<String> assistants = new ArrayList<>();
         Collections.addAll(assistants, response.<String>get("assistants").split("#"));
         List<String> members = new ArrayList<>();
         Collections.addAll(members, response.<String>get("members").split("#"));
+        TownRank rank;
+        try {
+            rank = TownRank.valueOf(response.<String>get("rank").toUpperCase());
+        } catch (Exception exception) {
+            rank = TownRank.CAMPEMENT;
+        }
         Town town = new Town(
                 id,
                 response.get("name"),
@@ -54,6 +62,7 @@ public class Town {
                 assistants,
                 members,
                 StringUtil.stringToLocation(response.get("spawn")),
+                rank,
                 response.get("creation")
         );
         loadedTowns.put(town.getId(), town);
@@ -71,6 +80,7 @@ public class Town {
         Collections.addAll(assistants, response.<String>get("assistants").split("#"));
         List<String> members = new ArrayList<>();
         Collections.addAll(members, response.<String>get("members").split("#"));
+        TownRank rank = TownRank.valueOf(response.<String>get("rank").toUpperCase());
         Town town = new Town(
                 response.get("id"),
                 name,
@@ -78,6 +88,7 @@ public class Town {
                 assistants,
                 members,
                 StringUtil.stringToLocation(response.get("spawn")),
+                rank,
                 response.get("creation")
         );
         loadedTowns.put(town.getId(), town);
@@ -182,6 +193,16 @@ public class Town {
         return this;
     }
 
+    public TownRank getRank() {
+        return rank;
+    }
+
+    public Town setRank(TownRank rank) {
+        this.rank = rank;
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `rank`=? WHERE `id`=?", rank.toString().toUpperCase(), getId());
+        return this;
+    }
+
     public long getCreation() {
         return creation;
     }
@@ -189,7 +210,7 @@ public class Town {
     public void messageAll(String message) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             Resident resident = Resident.getResident(player);
-            if(resident.getTownId() == getId()) {
+            if (resident.getTownId() == getId()) {
                 player.sendMessage(message);
             }
         }
