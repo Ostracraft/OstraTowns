@@ -42,7 +42,9 @@ public enum Messages {
         try {
             File file = new File(OstraTowns.get().getDataFolder(), "messages.yml");
             if (!file.exists()) {
-                if(!file.getParentFile().mkdirs() || !file.createNewFile())
+                if(!file.getParentFile().exists() && !file.getParentFile().mkdirs())
+                    return false;
+                if(!file.createNewFile())
                     return false;
             }
             YamlConfiguration config = new YamlConfiguration();
