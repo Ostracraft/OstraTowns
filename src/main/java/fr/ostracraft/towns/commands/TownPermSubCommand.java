@@ -8,10 +8,14 @@ import fr.ostracraft.towns.types.Town;
 import fr.ostracraft.towns.types.ResidentRank;
 import fr.ostracraft.towns.types.TownRank;
 import fr.ostracraft.towns.utils.Messages;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 // /town (perm|permission) -> gui
@@ -126,13 +130,26 @@ public class TownPermSubCommand implements CommandRunner {
             }
 
         } else if (args.get(1).equalsIgnoreCase("get")) {
-            String assistants = String.join(", ", town.getAssistants().stream().map(s -> Resident.getResident(s).getUsername()).collect(Collectors.toList()));
-            String members = String.join(", ", town.getMembers().stream().map(s -> Resident.getResident(s).getUsername()).collect(Collectors.toList()));
+            List<String> assistants = new ArrayList<>();
+            for (String assistantUUID : town.getAssistants()) {
+                if(assistantUUID.trim().length() < 1)
+                    continue;
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(assistantUUID));
+                assistants.add(offlinePlayer.getName());
+            }
+
+            List<String> members = new ArrayList<>();
+            for (String memberUUID : town.getMembers()) {
+                if(memberUUID.trim().length() < 1)
+                    continue;
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(memberUUID));
+                members.add(offlinePlayer.getName());
+            }
 
             player.sendMessage(Messages.TOWN_RANK_GET_HEADER.format());
             player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("MAIRE", resident.isMayor() ? resident.getUsername() : Resident.getResident(town.getMayor()).getUsername()));
-            player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("ASSISTANTS", assistants.trim().length() > 0 ? assistants : "AUCUNS"));
-            player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("MEMBRES", members.trim().length() > 0 ? members : "AUCUNS"));
+            player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("ASSISTANTS", assistants.size() > 0 ? String.join(", ", assistants) : "AUCUNS"));
+            player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("MEMBRES", members.size() > 0 ? String.join(", ", members) : "AUCUNS"));
         } else {
             sender.sendMessage(Messages.INVALID_ARGUMENTS.format("&4/ville permission <get/set>"));
         }
