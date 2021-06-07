@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'java'
 }
 
@@ -18,15 +18,20 @@ repositories {
 }
 
 dependencies {
-    compileOnly group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
-    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: mcVersion + subVersion + '-R0.1-SNAPSHOT'
+    shadow group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
+    shadow group: 'org.spigotmc', name: 'spigot-api', version: mcVersion + subVersion + '-R0.1-SNAPSHOT'
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
-    implementation group: 'com.github.BakaAless', name: 'CommandAPI', version: '868807870'
+    implementation group: 'com.github.BakaAless', name: 'CommandAPI', version: '868807870', {
+        exclude module: 'spigot-api'
+        exclude module: 'annotations'
+    }
 }
 
 shadowJar {
-    archiveName("OstraTowns.jar")
-    setLibsDirName("..\\out")
+    archiveName 'OstraTowns.jar'
+    setLibsDirName '..\\out'
+    relocate 'com.zaxxer.hikari', 'fr.ostracraft.towns.libs.hikari'
+    relocate 'fr.bakaaless.api', 'fr.ostracraft.towns.libs.commandapi'
 }
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
