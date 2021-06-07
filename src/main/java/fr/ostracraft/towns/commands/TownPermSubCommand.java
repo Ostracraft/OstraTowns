@@ -5,7 +5,7 @@ import fr.bakaaless.api.command.annotations.RunCommand;
 import fr.bakaaless.api.command.annotations.RunSubCommand;
 import fr.ostracraft.towns.types.Resident;
 import fr.ostracraft.towns.types.Town;
-import fr.ostracraft.towns.types.TownRank;
+import fr.ostracraft.towns.types.ResidentRank;
 import fr.ostracraft.towns.utils.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,17 +22,21 @@ public class TownPermSubCommand implements CommandRunner {
 
     @Override
     public boolean run(CommandSender sender, List<String> args) {
+        Player player = ((Player) sender);
+        Resident resident = Resident.getResident(player);
+        if(resident.getTownId() < 1) {
+            player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+            return true;
+        }
         if (args.size() < 1) {
             sender.sendMessage(Messages.INVALID_ARGUMENTS.format("&4/ville permission <get/set>"));
             return true;
         }
-        Player player = ((Player) sender);
         if (args.get(1).equalsIgnoreCase("set")) {
             if (args.size() < 3) {
                 sender.sendMessage(Messages.INVALID_ARGUMENTS.format("&4/ville permission set <joueur> <rang>"));
                 return true;
             }
-            Resident resident = Resident.getResident(player);
             Resident target = Resident.getResident(args.get(2));
             if (resident.equals(target)) {
                 sender.sendMessage(Messages.INVALID_ARGUMENTS.format("Vous ne pouvez pas définir votre propre rang"));
@@ -46,13 +50,13 @@ public class TownPermSubCommand implements CommandRunner {
                 sender.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format("Vous n'avez pas un rang suppérieur à &4" + target.getUsername() + "&c"));
                 return true;
             }
-            TownRank townRank;
+            ResidentRank residentRank;
             try {
-                townRank = TownRank.valueOf(args.get(3).toUpperCase());
+                residentRank = ResidentRank.valueOf(args.get(3).toUpperCase());
             } catch (Exception exception) {
-                townRank = null;
+                residentRank = null;
             }
-            if (townRank == null) {
+            if (residentRank == null) {
                 sender.sendMessage(Messages.INVALID_ARGUMENTS.format("Rang invalide: &4" + args.get(3) + "&c, rangs: maire/assistant/membre/nouveau"));
                 return true;
             }
@@ -61,15 +65,15 @@ public class TownPermSubCommand implements CommandRunner {
                 player.sendMessage(Messages.ERROR_UNKNOWN.format());
                 return true;
             }
-            switch (townRank) {
+            switch (residentRank) {
                 case NOUVEAU: {
                     if (resident.isMayor() || resident.isAssistant()) {
                         town.removeAssistant(target.getUuid());
                         town.removeMember(target.getUuid());
 
-                        town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), townRank.toString(), player.getName()));
+                        town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), residentRank.toString(), player.getName()));
                     } else {
-                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(TownRank.ASSISTANT.toString()));
+                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
                     }
                     break;
                 }
@@ -78,9 +82,9 @@ public class TownPermSubCommand implements CommandRunner {
                         town.removeAssistant(target.getUuid());
                         town.addMember(target.getUuid());
 
-                        town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), townRank.toString(), player.getName()));
+                        town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), residentRank.toString(), player.getName()));
                     } else {
-                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(TownRank.ASSISTANT.toString()));
+                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
                     }
                     break;
                 }
@@ -89,9 +93,9 @@ public class TownPermSubCommand implements CommandRunner {
                         town.addAssistant(target.getUuid());
                         town.removeMember(target.getUuid());
 
-                        town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), townRank.toString(), player.getName()));
+                        town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), residentRank.toString(), player.getName()));
                     } else {
-                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(TownRank.MAIRE.toString()));
+                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE.toString()));
                     }
                     break;
                 }
@@ -102,9 +106,9 @@ public class TownPermSubCommand implements CommandRunner {
                         town.setMayor(target.getUuid());
                         town.addAssistant(player.getUniqueId().toString());
 
-                        town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), townRank.toString(), player.getName()));
+                        town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), residentRank.toString(), player.getName()));
                     } else {
-                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(TownRank.MAIRE.toString()));
+                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE.toString()));
                     }
                     break;
                 }
@@ -115,7 +119,6 @@ public class TownPermSubCommand implements CommandRunner {
             }
 
         } else if (args.get(1).equalsIgnoreCase("get")) {
-            Resident resident = Resident.getResident(player);
             Town town = Town.getTownById(resident.getTownId());
             String assistants = String.join(", ", town.getAssistants().stream().map(s -> Resident.getResident(s).getUsername()).collect(Collectors.toList()));
             String members = String.join(", ", town.getMembers().stream().map(s -> Resident.getResident(s).getUsername()).collect(Collectors.toList()));
@@ -132,6 +135,17 @@ public class TownPermSubCommand implements CommandRunner {
 
     @Override
     public List<String> tabCompleter(CommandSender sender, List<String> args) {
+//        if(args.size() == 0) {
+//            return Arrays.asList("get", "set");
+//        } else if (args.size() == 1) {
+//            if(args.get(1).equalsIgnoreCase("get"))
+//                return null;
+//            return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
+//        } else if (args.size() == 2) {
+//            if(args.get(1).equalsIgnoreCase("get"))
+//                return null;
+//            return Arrays.stream(TownRank.values()).map(TownRank::toString).collect(Collectors.toList());
+//        }
         return null;
     }
 
