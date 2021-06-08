@@ -31,8 +31,10 @@ public enum Messages {
     TOWN_RANK_PROMOTION("%prefix% &e{0} &aa été promu &e{1} &apar &e{2} &a!"),
     TOWN_RANK_GET_HEADER("%prefix% &aVoici les membres gradés de votre ville:"),
     TOWN_RANK_GET_ITEM("&6- {0}&6: &a{1}"),
-    ;
 
+    TOWN_KICKED_ALL("%prefix% &aLe membre &e{0} &aa été expulsé de votre ville par &e{1} &a!"),
+    TOWN_KICKED_VICTIM("%prefix% &cVous avez été expulsé de votre ville par &4{0} &c!"),
+    ;
     private String value;
 
     Messages(String value) {

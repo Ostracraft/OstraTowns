@@ -86,6 +86,42 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 resident.setTownId(0);
                 player.sendMessage(Messages.TOWN_LEAVE_PLAYER.format());
                 town.messageAll(Messages.TOWN_LEAVE_OTHERS.format(player.getName()));
+                break;
+            }
+
+            // Kick
+            case "kick":
+            case "exclude": {
+                if (resident.getTownId() < 1) {
+                    player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                    break;
+                }
+                if(!resident.isAssistant() && !resident.isMayor()) {
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                    break;
+                }
+                if(subArgs.size() < 1) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Vous devez spécifier le membre à exclure"));
+                    break;
+                }
+                Resident target = Resident.getResident(subArgs.get(0));
+                if(target == null || target.getTownId() != resident.getTownId()) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Ce membre ne fait pas parti de votre ville"));
+                    break;
+                }
+                if(!resident.isAbove(target)) {
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format("Vous n'avez pas un rang supérieur à &4" + target.getUsername() + "&c"));
+                    break;
+                }
+                Town town = Town.getTownById(resident.getTownId());
+                town.removeAssistant(target.getUuid());
+                town.removeMember(target.getUuid());
+                target.setTownId(0);
+                town.messageAll(Messages.TOWN_KICKED_ALL.format(target.getUsername(), resident.getUsername()));
+                Player victim = Bukkit.getPlayer(UUID.fromString(target.getUuid()));
+                if(victim.isOnline())
+                    victim.sendMessage(Messages.TOWN_KICKED_VICTIM.format(resident.getUsername()));
+                break;
             }
 
             // Permission management
@@ -125,7 +161,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                         break;
                     }
                     if (!resident.isAbove(target)) {
-                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format("Vous n'avez pas un rang suppérieur à &4" + target.getUsername() + "&c"));
+                        player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format("Vous n'avez pas un rang supérieur à &4" + target.getUsername() + "&c"));
                         break;
                     }
                     ResidentRank residentRank;
@@ -215,6 +251,12 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 } else {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("&4/ville permission <get/set>"));
                 }
+                break;
+            }
+
+            default: {
+                player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue !"));
+                break;
             }
         }
         return true;
