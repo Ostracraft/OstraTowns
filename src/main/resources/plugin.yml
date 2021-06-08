@@ -5,3 +5,6 @@ website: https://ostracraft.jimdofree.com
 main: fr.ostracraft.towns.OstraTowns
 version: @version@
 api-version: @apiVersion@
+commands:
+  town:
+    aliases: [ "ville", "t", "vi" ]

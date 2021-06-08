@@ -1,12 +1,12 @@
 package fr.ostracraft.towns;
 
-import fr.bakaaless.api.command.CommandManager;
-import fr.bakaaless.api.command.CommandRunner;
+import fr.ostracraft.towns.commands.TownCommand;
 import fr.ostracraft.towns.types.Resident;
 import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.Messages;
 import fr.ostracraft.towns.utils.ReflectionUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,8 +17,6 @@ import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class OstraTowns extends JavaPlugin {
-
-    private CommandManager commandManager;
 
     @Override
     @SuppressWarnings("unused")
@@ -39,19 +37,11 @@ public class OstraTowns extends JavaPlugin {
 
     @SuppressWarnings("unchecked")
     private void registerCommands() {
-        this.commandManager = new CommandManager(this);
-        List<Class<?>> classes = ReflectionUtil.getClasses(getClass().getPackageName() + ".commands");
-        for (Class<?> clazz : classes) {
-            if(CommandRunner.class.isAssignableFrom(clazz))
-                this.commandManager.registerRunners((Class<? extends CommandRunner>) clazz);
-        }
-        CommandManager.Messages.PREFIX_ERROR.setMessage(Messages.PREFIX.format());
-        CommandManager.Messages.ERROR_COMMAND_PERMISSION.setMessage(Messages.NO_PERM.format());
-        CommandManager.Messages.ERROR_COMMAND_EXECUTOR_CONSOLE.setMessage(Messages.EXECUTABLE_BY_CONSOLE.format());
-        CommandManager.Messages.ERROR_COMMAND_EXECUTOR_PLAYER.setMessage(Messages.EXECUTABLE_BY_PLAYER.format());
-        CommandManager.Messages.ERROR_COMMAND_UNKNOWN.setMessage(Messages.ERROR_UNKNOWN.format());
-        CommandManager.Messages.ERROR_COMMAND_NEXISTS.setMessage(Messages.ERROR_UNKNOWN.format());
-        CommandManager.Messages.ERROR_COMMAND_ARGUMENTS.setMessage(Messages.INVALID_ARGUMENTS.format("Il faut {1} arguments"));
+        PluginCommand pluginCommand = getCommand("town");
+        pluginCommand.setUsage("/town");
+        TownCommand townCommand = new TownCommand();
+        pluginCommand.setExecutor(townCommand);
+        pluginCommand.setTabCompleter(townCommand);
     }
 
     private void registerListeners() {
