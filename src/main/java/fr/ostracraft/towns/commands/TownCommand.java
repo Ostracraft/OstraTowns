@@ -255,7 +255,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             }
 
             default: {
-                player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue !"));
+                player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue"));
                 break;
             }
         }
