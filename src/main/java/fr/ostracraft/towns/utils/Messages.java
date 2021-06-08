@@ -34,6 +34,13 @@ public enum Messages {
 
     TOWN_KICKED_ALL("%prefix% &aLe membre &e{0} &aa été expulsé de votre ville par &e{1} &a!"),
     TOWN_KICKED_VICTIM("%prefix% &cVous avez été expulsé de votre ville par &4{0} &c!"),
+
+    TOWN_INVITE_ALREADY("%prefix% &cLe joueur &4{0} &cest déjà invité à votre ville !"),
+    TOWN_INVITE_SUCCESS("%prefix% &aLe joueur &e{0} &aa été invité à votre ville."),
+    TOWN_INVITE_RECEIVE("%prefix% &aVous avez été invité à rejoindre la ville &e{0}&a, faites &e/town join {0} &apour accepter cette invitation."),
+    TOWN_INVITE_EXPIRED("%prefix% &cL'invitation à la ville &4{0} &ca expiré."),
+    TOWN_INVITE_NOT_INVITED("%prefix% &cVous n'avez pas été invité dans la ville &4{0} &c!"),
+    TOWN_INVITE_ACCEPTED("%prefix% &aLe joueur &e{0} &afait désormais parti de votre ville !");
     ;
     private String value;
 

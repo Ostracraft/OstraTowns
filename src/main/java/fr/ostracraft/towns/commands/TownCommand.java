@@ -1,5 +1,7 @@
 package fr.ostracraft.towns.commands;
 
+import fr.ostracraft.towns.InviteManager;
+import fr.ostracraft.towns.OstraTowns;
 import fr.ostracraft.towns.types.Resident;
 import fr.ostracraft.towns.types.ResidentRank;
 import fr.ostracraft.towns.types.Town;
@@ -251,6 +253,74 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 } else {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("&4/ville permission <get/set>"));
                 }
+                break;
+            }
+
+            // Invitations
+            case "invite":
+            case "inviter": {
+                if (resident.getTownId() < 1) {
+                    player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                    break;
+                }
+                if(!resident.isAssistant() && !resident.isMayor()) {
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                    break;
+                }
+                if(subArgs.size() < 1) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Vous devez spécifier le membre à inviter"));
+                    break;
+                }
+                Resident target = Resident.getResident(subArgs.get(0));
+                if(target == null) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le membre &4" + subArgs.get(0) + " &cn'a pas été trouvé"));
+                    break;
+                }
+                Player targetPlayer = Bukkit.getPlayer(UUID.fromString(target.getUuid()));
+                if(!targetPlayer.isOnline()) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le membre &4" + targetPlayer.getName() + " &c n'est pas connecté"));
+                    break;
+                }
+                if(target.getTownId() == resident.getTownId()) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le membre &4" + subArgs.get(0) + " &cfait déjà parti de votre ville"));
+                    break;
+                }
+                Town town = Town.getTownById(resident.getTownId());
+                if(InviteManager.isInvited(target, town)) {
+                    player.sendMessage(Messages.TOWN_INVITE_ALREADY.format(target.getUsername()));
+                    break;
+                }
+                InviteManager.addInvite(target, town);
+                player.sendMessage(Messages.TOWN_INVITE_SUCCESS.format(target.getUsername()));
+                targetPlayer.sendMessage(Messages.TOWN_INVITE_RECEIVE.format(town.getName()));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(OstraTowns.get(), () -> {
+                    InviteManager.removeInvite(target, town);
+                    targetPlayer.sendMessage(Messages.TOWN_INVITE_EXPIRED.format(town.getName()));
+                }, 6000); // 5 minutes
+                break;
+            }
+            case "join":
+            case "rejoindre": {
+                if(resident.getTownId() > 0) {
+                    player.sendMessage(Messages.TOWN_ALREADY_IN_TOWN.format());
+                    break;
+                }
+                if(subArgs.size() < 1) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Merci de saisir le nom de la ville"));
+                    break;
+                }
+                Town town = Town.getTownNamed(subArgs.get(0));
+                if(town == null) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Ville inconnue"));
+                    break;
+                }
+                if(!InviteManager.isInvited(resident, town)) {
+                    player.sendMessage(Messages.TOWN_INVITE_NOT_INVITED.format(town.getName()));
+                    break;
+                }
+                InviteManager.removeInvite(resident, town);
+                resident.setTownId(town.getId());
+                town.messageAll(Messages.TOWN_INVITE_ACCEPTED.format(player.getName()));
                 break;
             }
 
