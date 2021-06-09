@@ -55,6 +55,7 @@ public class OstraTowns extends JavaPlugin {
             try {
                 Listener listener = (Listener) clazz.getConstructor().newInstance();
                 getServer().getPluginManager().registerEvents(listener, this);
+                System.out.println("listener = " + listener);
             } catch (Exception e) {
                 e.printStackTrace();
             }

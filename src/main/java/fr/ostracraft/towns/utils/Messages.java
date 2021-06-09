@@ -45,8 +45,9 @@ public enum Messages {
     TOWN_CLAIM_CAMPEMENT_LIMIT_REACHED("%prefix% &cVous avez atteint votre limite ce claim en tant que Campement: &4{0} claims maximum&c."),
     TOWN_CLAIM_ALREADY_OWNED("%prefix% &cCe claim est déjà possédé par la ville &4{0} &c!"),
     TOWN_CLAIM_CLAIMED("%prefix% &aVous avez claim le chunk &ex: {0}, z: {1}&a."),
-    TOWN_NOT_YOUR_CLAIM("%prefix% &cCe chunk ne vous appartient pas !"),
+    TOWN_NOT_YOUR_CLAIM("%prefix% &cCe chunk ne vous appartient pas, il appartient à la ville &4{0}&c."),
     TOWN_CLAIM_UNCLAIMED("%prefix% &aVous avez unclaim le chunk &ex: {0}, z: {1}&a."),
+    TOWN_CLAIM_ENTER_ACTIONBAR("&6Entrée sur le territoire de &e{0}")
     ;
     private String value;
 
