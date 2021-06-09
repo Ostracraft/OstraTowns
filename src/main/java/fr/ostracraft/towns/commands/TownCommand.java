@@ -2,10 +2,7 @@ package fr.ostracraft.towns.commands;
 
 import fr.ostracraft.towns.InviteManager;
 import fr.ostracraft.towns.OstraTowns;
-import fr.ostracraft.towns.types.Resident;
-import fr.ostracraft.towns.types.ResidentRank;
-import fr.ostracraft.towns.types.Town;
-import fr.ostracraft.towns.types.TownRank;
+import fr.ostracraft.towns.types.*;
 import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.Messages;
 import org.apache.commons.lang.ArrayUtils;
@@ -310,17 +307,76 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 Town town = Town.getTownNamed(subArgs.get(0));
-                if(town == null) {
+                if (town == null) {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("Ville inconnue"));
                     break;
                 }
-                if(!InviteManager.isInvited(resident, town)) {
+                if (!InviteManager.isInvited(resident, town)) {
                     player.sendMessage(Messages.TOWN_INVITE_NOT_INVITED.format(town.getName()));
                     break;
                 }
                 InviteManager.removeInvite(resident, town);
                 resident.setTownId(town.getId());
                 town.messageAll(Messages.TOWN_INVITE_ACCEPTED.format(player.getName()));
+                break;
+            }
+
+            // Claim
+            case "claim": {
+                if (resident.getTownId() < 1) {
+                    player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                    break;
+                }
+
+                if (!resident.isMayor() && !resident.isAssistant()) {
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                    break;
+                }
+
+                Town town = Town.getTownById(resident.getTownId());
+                if (town == null) {
+                    player.sendMessage(Messages.ERROR_UNKNOWN.format());
+                    break;
+                }
+
+                if (town.getRank().equals(TownRank.CAMPEMENT)) {
+                    List<TownBlock> townBlocks = TownBlock.getBlocksOwned(town);
+                    if (townBlocks.size() >= Config.TOWN_CAMPEMENT_MAX_CLAIMS.<Integer>get()) {
+                        player.sendMessage(Messages.TOWN_CLAIM_CAMPEMENT_LIMIT_REACHED.format(Config.TOWN_CAMPEMENT_MAX_CLAIMS.<Integer>get().toString()));
+                        break;
+                    }
+                }
+
+                TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
+                if(townBlock.getTownId() > 0) {
+                    Town owner = Town.getTownById(townBlock.getTownId());
+                    player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(String.valueOf(owner.getName())));
+                    break;
+                }
+                townBlock.setTownId(resident.getTownId());
+                player.sendMessage(Messages.TOWN_CLAIM_CLAIMED.format(String.valueOf(townBlock.getX()), String.valueOf(townBlock.getZ())));
+                break;
+            }
+
+            // Unclaim
+            case "unclaim": {
+                if (resident.getTownId() < 1) {
+                    player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                    break;
+                }
+
+                if (!resident.isMayor() && !resident.isAssistant()) {
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                    break;
+                }
+
+                TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
+                if(resident.getTownId() != townBlock.getTownId()) {
+                    player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format());
+                    break;
+                }
+                townBlock.setTownId(0);
+                player.sendMessage(Messages.TOWN_CLAIM_UNCLAIMED.format(String.valueOf(townBlock.getX()), String.valueOf(townBlock.getZ())));
                 break;
             }
 

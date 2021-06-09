@@ -2,6 +2,7 @@ package fr.ostracraft.towns;
 
 import fr.ostracraft.towns.commands.TownCommand;
 import fr.ostracraft.towns.types.Resident;
+import fr.ostracraft.towns.types.TownBlock;
 import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.Messages;
 import fr.ostracraft.towns.utils.ReflectionUtil;
@@ -33,6 +34,8 @@ public class OstraTowns extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers()) {
             Resident resident = Resident.getResident(player);
         }
+        // Cache all claimed townblocks
+        TownBlock.fetchAll();
     }
 
     @SuppressWarnings("unchecked")

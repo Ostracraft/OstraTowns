@@ -16,6 +16,7 @@ public enum Config {
     DB_PREFIX("ot_"),
 
     TOWN_NAME_MAX_LENGHT(25),
+    TOWN_CAMPEMENT_MAX_CLAIMS(4),
     ;
 
     private Object value;

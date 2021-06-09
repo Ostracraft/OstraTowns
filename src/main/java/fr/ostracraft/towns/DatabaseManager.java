@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class DatabaseManager {
 
@@ -80,6 +82,32 @@ public class DatabaseManager {
             throwable.printStackTrace();
         }
         return new DatabaseResponse(hashMap);
+    }
+
+    public static List<DatabaseResponse> getAll(String sql, Object... args) {
+        List<DatabaseResponse> responses = new ArrayList<>();
+        try {
+            ProxyConnection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            for (int i = 0; i < args.length; i++) {
+                statement.setObject(i + 1, args[i]);
+            }
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                    String name = resultSet.getMetaData().getColumnName(i + 1);
+                    hashMap.put(name, resultSet.getObject(name));
+                }
+                responses.add(new DatabaseResponse(hashMap));
+            }
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return responses;
     }
 
     public static void send(String sql, Object... args) {
