@@ -96,7 +96,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 if(!resident.isAssistant() && !resident.isMayor()) {
-                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                     break;
                 }
                 if(subArgs.size() < 1) {
@@ -181,7 +181,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
 
                                 town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), residentRank.toString(), player.getName()));
                             } else {
-                                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                             }
                             break;
                         }
@@ -192,7 +192,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
 
                                 town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), residentRank.toString(), player.getName()));
                             } else {
-                                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                             }
                             break;
                         }
@@ -203,7 +203,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
 
                                 town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), residentRank.toString(), player.getName()));
                             } else {
-                                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE.toString()));
+                                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE));
                             }
                             break;
                         }
@@ -216,7 +216,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
 
                                 town.messageAll(Messages.TOWN_RANK_PROMOTION.format(target.getUsername(), residentRank.toString(), player.getName()));
                             } else {
-                                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE.toString()));
+                                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE));
                             }
                             break;
                         }
@@ -261,7 +261,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 if(!resident.isAssistant() && !resident.isMayor()) {
-                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                     break;
                 }
                 if(subArgs.size() < 1) {
@@ -329,7 +329,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 }
 
                 if (!resident.isMayor() && !resident.isAssistant()) {
-                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                     break;
                 }
 
@@ -342,7 +342,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 if (town.getRank().equals(TownRank.CAMPEMENT)) {
                     List<TownBlock> townBlocks = TownBlock.getBlocksOwned(town);
                     if (townBlocks.size() >= Config.TOWN_CAMPEMENT_MAX_CLAIMS.<Integer>get()) {
-                        player.sendMessage(Messages.TOWN_CLAIM_CAMPEMENT_LIMIT_REACHED.format(Config.TOWN_CAMPEMENT_MAX_CLAIMS.<Integer>get().toString()));
+                        player.sendMessage(Messages.TOWN_CLAIM_CAMPEMENT_LIMIT_REACHED.format(Config.TOWN_CAMPEMENT_MAX_CLAIMS.<Integer>get()));
                         break;
                     }
                 }
@@ -350,11 +350,11 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
                 if(townBlock.getTownId() > 0) {
                     Town owner = Town.getTownById(townBlock.getTownId());
-                    player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(String.valueOf(owner.getName())));
+                    player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(owner.getName()));
                     break;
                 }
                 townBlock.setTownId(resident.getTownId());
-                player.sendMessage(Messages.TOWN_CLAIM_CLAIMED.format(String.valueOf(townBlock.getX()), String.valueOf(townBlock.getZ())));
+                player.sendMessage(Messages.TOWN_CLAIM_CLAIMED.format(townBlock.getX(), townBlock.getZ()));
                 break;
             }
 
@@ -366,7 +366,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 }
 
                 if (!resident.isMayor() && !resident.isAssistant()) {
-                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT.toString()));
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                     break;
                 }
 
@@ -376,7 +376,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 townBlock.setTownId(0);
-                player.sendMessage(Messages.TOWN_CLAIM_UNCLAIMED.format(String.valueOf(townBlock.getX()), String.valueOf(townBlock.getZ())));
+                player.sendMessage(Messages.TOWN_CLAIM_UNCLAIMED.format(townBlock.getX(), townBlock.getZ()));
                 break;
             }
 

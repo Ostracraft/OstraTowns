@@ -82,10 +82,10 @@ public enum Messages {
         return this.value;
     }
 
-    public String format(String... args) {
+    public String format(Object... args) {
         String s = get();
         for (int i = 0; i < args.length; i++) {
-            s = s.replace("{" + i + "}", args[i]);
+            s = s.replace("{" + i + "}", String.valueOf(args[i]));
         }
         if(!toString().equalsIgnoreCase("PREFIX"))
             s = s.replace("%prefix%", PREFIX.format());
