@@ -70,7 +70,6 @@ public class TownBlock {
                     response.get("z"),
                     response.get("townId")
             );
-            System.out.println("townBlock = " + townBlock);
             townBlock.cache();
         }
     }
