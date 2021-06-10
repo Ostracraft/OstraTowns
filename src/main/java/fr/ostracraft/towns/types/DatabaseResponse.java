@@ -2,6 +2,7 @@ package fr.ostracraft.towns.types;
 
 import java.util.HashMap;
 
+@SuppressWarnings({"unused", "unchecked"})
 public class DatabaseResponse {
 
     private final HashMap<String, Object> hashMap;

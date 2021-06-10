@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class Town {
 
     private final int id;
@@ -74,8 +74,8 @@ public class Town {
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`=?", name);
         if(response == null)
             return null;
-        if (loadedTowns.containsKey(response.get("id")))
-            return loadedTowns.get(response.get("id"));
+        if (loadedTowns.containsKey(response.<Integer>get("id")))
+            return loadedTowns.get(response.<Integer>get("id"));
         List<String> assistants = new ArrayList<>();
         Collections.addAll(assistants, response.<String>get("assistants").split("#"));
         List<String> members = new ArrayList<>();
@@ -189,7 +189,7 @@ public class Town {
 
     public Town setSpawn(Location spawn) {
         this.spawn = spawn;
-        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `spawn`=? WHERE `id`=?", StringUtil.locationToString(getSpawn()), getId());
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `spawn`=? WHERE `id`=?", StringUtil.locationToString(spawn), getId());
         return this;
     }
 

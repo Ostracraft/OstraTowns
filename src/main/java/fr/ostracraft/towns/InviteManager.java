@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@SuppressWarnings("UnusedReturnValue")
 public class InviteManager {
 
     private static final HashMap<String, List<String>> hashMap = new HashMap<>();

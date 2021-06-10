@@ -4,8 +4,5 @@ public enum TownRank {
     CAMPEMENT,
     BOURG,
     CITY,
-    KINGDOM,
-    ;
-
-
+    KINGDOM
 }

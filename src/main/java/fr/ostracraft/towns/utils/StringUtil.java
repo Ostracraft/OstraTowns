@@ -12,6 +12,7 @@ public class StringUtil {
     }
 
     public static String locationToString(Location location) {
+        assert location.getWorld() != null;
         return location.getX() + "#" +
                 location.getY() + "#" +
                 location.getZ() + "#" +

@@ -64,6 +64,7 @@ public class DatabaseManager {
         HashMap<String, Object> hashMap = new HashMap<>();
         try {
             ProxyConnection connection = getConnection();
+            assert connection != null;
             PreparedStatement statement = connection.prepareStatement(sql);
             for (int i = 0; i < args.length; i++) {
                 statement.setObject(i + 1, args[i]);
@@ -88,6 +89,7 @@ public class DatabaseManager {
         List<DatabaseResponse> responses = new ArrayList<>();
         try {
             ProxyConnection connection = getConnection();
+            assert connection != null;
             PreparedStatement statement = connection.prepareStatement(sql);
             for (int i = 0; i < args.length; i++) {
                 statement.setObject(i + 1, args[i]);
@@ -113,6 +115,7 @@ public class DatabaseManager {
     public static void send(String sql, Object... args) {
         try {
             ProxyConnection connection = getConnection();
+            assert connection != null;
             PreparedStatement statement = connection.prepareStatement(sql);
             for (int i = 0; i < args.length; i++) {
                 statement.setObject(i + 1, args[i]);

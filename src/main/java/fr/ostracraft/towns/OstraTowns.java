@@ -63,9 +63,9 @@ public class OstraTowns extends JavaPlugin {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     private void registerCommands() {
         PluginCommand pluginCommand = getCommand("town");
+        assert pluginCommand != null;
         pluginCommand.setUsage("/town");
         TownCommand townCommand = new TownCommand();
         pluginCommand.setExecutor(townCommand);

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue", "BooleanMethodIsAlwaysInverted"})
 public class Resident {
 
     private final String uuid;
@@ -37,8 +37,8 @@ public class Resident {
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "residents` WHERE `" + type + "`=?", usernameOrUUID);
         if (response == null)
             return null;
-        if (loadedResidents.containsKey(response.get("uuid")))
-            return loadedResidents.get(response.get("uuid"));
+        if (loadedResidents.containsKey(response.<String>get("uuid")))
+            return loadedResidents.get(response.<String>get("uuid"));
         Resident resident = new Resident(
                 response.get("uuid"),
                 response.get("username"),
@@ -104,6 +104,7 @@ public class Resident {
             return false;
         }
         Town town = Town.getTownById(getTownId());
+        assert town != null;
         return town.getMayor().equalsIgnoreCase(getUuid());
     }
 
@@ -112,6 +113,7 @@ public class Resident {
             return false;
         }
         Town town = Town.getTownById(getTownId());
+        assert town != null;
         return town.getAssistants().contains(getUuid());
     }
 
@@ -120,6 +122,7 @@ public class Resident {
             return false;
         }
         Town town = Town.getTownById(getTownId());
+        assert town != null;
         return town.getMembers().contains(getUuid());
     }
 

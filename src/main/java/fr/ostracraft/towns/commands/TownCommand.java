@@ -53,8 +53,8 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 String name = subArgs.get(0);
-                if (name.length() > Config.TOWN_NAME_MAX_LENGHT.<Integer>get()) {
-                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le nom spécifié est trop long (Max: " + Config.TOWN_NAME_MAX_LENGHT.get() + ")"));
+                if (name.length() > Config.TOWN_NAME_MAX_LENGTH.<Integer>get()) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le nom spécifié est trop long (Max: " + Config.TOWN_NAME_MAX_LENGTH.get() + ")"));
                     break;
                 }
                 if (Town.getTownNamed(name) != null) {
@@ -82,6 +82,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 Town town = Town.getTownById(resident.getTownId());
+                assert town != null;
                 if (town.getMayor().equalsIgnoreCase(player.getUniqueId().toString())) {
                     player.sendMessage(Messages.TOWN_LEAVE_MAYOR.format());
                     break;
@@ -119,12 +120,13 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 Town town = Town.getTownById(resident.getTownId());
+                assert town != null;
                 town.removeAssistant(target.getUuid());
                 town.removeMember(target.getUuid());
                 target.setTownId(0);
                 town.messageAll(Messages.TOWN_KICKED_ALL.format(target.getUsername(), resident.getUsername()));
                 Player victim = Bukkit.getPlayer(UUID.fromString(target.getUuid()));
-                if(victim.isOnline())
+                if (victim != null && victim.isOnline())
                     victim.sendMessage(Messages.TOWN_KICKED_VICTIM.format(resident.getUsername()));
                 break;
             }
@@ -270,26 +272,27 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                     break;
                 }
-                if(subArgs.size() < 1) {
+                if (subArgs.size() < 1) {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("Vous devez spécifier le membre à inviter"));
                     break;
                 }
                 Resident target = Resident.getResident(subArgs.get(0));
-                if(target == null) {
+                if (target == null) {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le membre &4" + subArgs.get(0) + " &cn'a pas été trouvé"));
                     break;
                 }
                 Player targetPlayer = Bukkit.getPlayer(UUID.fromString(target.getUuid()));
-                if(!targetPlayer.isOnline()) {
-                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le membre &4" + targetPlayer.getName() + " &c n'est pas connecté"));
+                if (targetPlayer == null || !targetPlayer.isOnline()) {
+                    player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le membre &4" + target.getUsername() + " &c n'est pas connecté"));
                     break;
                 }
-                if(target.getTownId() == resident.getTownId()) {
+                if (target.getTownId() == resident.getTownId()) {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le membre &4" + subArgs.get(0) + " &cfait déjà parti de votre ville"));
                     break;
                 }
                 Town town = Town.getTownById(resident.getTownId());
-                if(InviteManager.isInvited(target, town)) {
+                assert town != null;
+                if (InviteManager.isInvited(target, town)) {
                     player.sendMessage(Messages.TOWN_INVITE_ALREADY.format(target.getUsername()));
                     break;
                 }
@@ -356,7 +359,10 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
                 if(townBlock.getTownId() > 0) {
                     Town owner = Town.getTownById(townBlock.getTownId());
-                    player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(owner.getName()));
+                    if (owner == null)
+                        player.sendMessage(Messages.ERROR_UNKNOWN.format());
+                    else
+                        player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(owner.getName()));
                     break;
                 }
                 double playerBalance = OstraTowns.getEconomy().getBalance(player);

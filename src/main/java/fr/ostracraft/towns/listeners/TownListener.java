@@ -7,7 +7,6 @@ import fr.ostracraft.towns.types.TownBlock;
 import fr.ostracraft.towns.utils.Messages;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -56,6 +55,8 @@ public class TownListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         // Check if old chunk is different than the new
+        if(event.getTo() == null)
+            return;
         if(!event.getFrom().getChunk().equals(event.getTo().getChunk())) {
             TownBlock townBlockOld = TownBlock.getTownBlockAt(event.getFrom());
             TownBlock townBlockNew = TownBlock.getTownBlockAt(event.getTo());
@@ -64,6 +65,7 @@ public class TownListener implements Listener {
                     event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.TOWN_CLAIM_ENTER_ACTIONBAR.format("Territoire libre")));
                 } else {
                     Town town = Town.getTownById(townBlockNew.getTownId());
+                    assert town != null;
                     event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.TOWN_CLAIM_ENTER_ACTIONBAR.format(town.getName())));
                 }
             }
