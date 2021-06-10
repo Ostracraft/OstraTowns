@@ -6,10 +6,13 @@ import fr.ostracraft.towns.types.TownBlock;
 import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.Messages;
 import fr.ostracraft.towns.utils.ReflectionUtil;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,9 +22,22 @@ import java.util.List;
 @SuppressWarnings("FieldCanBeLocal")
 public class OstraTowns extends JavaPlugin {
 
+    private static Economy economy;
+
     @Override
     @SuppressWarnings("unused")
     public void onEnable() {
+        final Plugin VAULT = Bukkit.getPluginManager().getPlugin("Vault");
+        if(VAULT == null || !VAULT.isEnabled()) {
+            getLogger().severe("Missing VAULT dependency, disabling...");
+            setEnabled(false);
+            return;
+        }
+        if(!setupEconomy()) {
+            getLogger().severe("Failed to setup VaultAPI economy, disabling...");
+            setEnabled(false);
+            return;
+        }
         if (!Config.load())
             getLogger().severe("Failed to load config ! Using default values.");
         if (!Messages.load())
@@ -36,6 +52,15 @@ public class OstraTowns extends JavaPlugin {
         }
         // Cache all claimed townblocks
         TownBlock.fetchAll();
+    }
+
+    private boolean setupEconomy() {
+        RegisteredServiceProvider<Economy> registeredServiceProvider = getServer().getServicesManager().getRegistration(Economy.class);
+        if (registeredServiceProvider == null) {
+            return false;
+        }
+        economy = registeredServiceProvider.getProvider();
+        return true;
     }
 
     @SuppressWarnings("unchecked")
@@ -55,7 +80,6 @@ public class OstraTowns extends JavaPlugin {
             try {
                 Listener listener = (Listener) clazz.getConstructor().newInstance();
                 getServer().getPluginManager().registerEvents(listener, this);
-                System.out.println("listener = " + listener);
             } catch (Exception e) {
                 e.printStackTrace();
             }
