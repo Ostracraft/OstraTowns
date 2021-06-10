@@ -76,7 +76,13 @@ public class TownListener implements Listener {
         Resident resident = Resident.getResident(player);
         Block block = event.getBlock();
         TownBlock townBlock = TownBlock.getTownBlockAt(block.getLocation());
+        if(townBlock.getTownId() < 1)
+            return;
         Town town = Town.getTownById(townBlock.getTownId());
+        if(town == null) {
+            player.sendMessage(Messages.ERROR_UNKNOWN.format());
+            return;
+        }
         if (townBlock.getTownId() != resident.getTownId()) {
             player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town.getName()));
             event.setCancelled(true);
@@ -99,7 +105,13 @@ public class TownListener implements Listener {
         Resident resident = Resident.getResident(player);
         Block block = event.getBlock();
         TownBlock townBlock = TownBlock.getTownBlockAt(block.getLocation());
+        if(townBlock.getTownId() < 1)
+            return;
         Town town = Town.getTownById(townBlock.getTownId());
+        if(town == null) {
+            player.sendMessage(Messages.ERROR_UNKNOWN.format());
+            return;
+        }
         if (townBlock.getTownId() != resident.getTownId()) {
             player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town.getName()));
             event.setCancelled(true);
@@ -121,8 +133,16 @@ public class TownListener implements Listener {
         Player player = event.getPlayer();
         Resident resident = Resident.getResident(player);
         Block block = event.getClickedBlock();
+        if(block == null)
+            return;
         TownBlock townBlock = TownBlock.getTownBlockAt(block.getLocation());
+        if(townBlock.getTownId() < 1)
+            return;
         Town town = Town.getTownById(townBlock.getTownId());
+        if(town == null) {
+            player.sendMessage(Messages.ERROR_UNKNOWN.format());
+            return;
+        }
         if (townBlock.getTownId() != resident.getTownId()) {
             player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town.getName()));
             event.setCancelled(true);

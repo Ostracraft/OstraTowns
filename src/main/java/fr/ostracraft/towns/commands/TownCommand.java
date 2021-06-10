@@ -385,7 +385,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
                 if(resident.getTownId() != townBlock.getTownId()) {
                     Town town = Town.getTownById(townBlock.getTownId());
-                    player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town.getName()));
+                    player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town == null ? "Territoire libre" : town.getName()));
                     break;
                 }
                 townBlock.setTownId(0);
