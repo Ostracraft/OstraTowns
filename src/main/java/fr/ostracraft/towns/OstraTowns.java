@@ -95,4 +95,8 @@ public class OstraTowns extends JavaPlugin {
     public File getFile() {
         return super.getFile();
     }
+
+    public static Economy getEconomy() {
+        return economy;
+    }
 }

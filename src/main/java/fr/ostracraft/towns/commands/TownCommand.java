@@ -61,9 +61,15 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage(Messages.TOWN_ALREADY_EXISTS.format());
                     break;
                 }
+                double playerBalance = OstraTowns.getEconomy().getBalance(player);
+                if(playerBalance < Config.TOWN_CREATION_PRICE.<Integer>get()) {
+                    player.sendMessage(Messages.TOWN_CLAIM_NOT_ENOUGH_MONEY.format(Config.TOWN_CREATION_PRICE.<Integer>get()));
+                    break;
+                }
                 Town town = Town.createTown(name, ((Player) sender));
                 resident.setTownId(town.getId());
                 player.sendMessage(Messages.TOWN_CREATED.format(name));
+                OstraTowns.getEconomy().withdrawPlayer(player, Config.TOWN_CREATION_PRICE.<Integer>get().doubleValue());
                 break;
             }
 
@@ -353,8 +359,14 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(owner.getName()));
                     break;
                 }
+                double playerBalance = OstraTowns.getEconomy().getBalance(player);
+                if(playerBalance < Config.TOWN_CLAIM_PRICE.<Integer>get()) {
+                    player.sendMessage(Messages.TOWN_CLAIM_NOT_ENOUGH_MONEY.format(Config.TOWN_CLAIM_PRICE.<Integer>get()));
+                    break;
+                }
                 townBlock.setTownId(resident.getTownId());
                 player.sendMessage(Messages.TOWN_CLAIM_CLAIMED.format(townBlock.getX(), townBlock.getZ()));
+                OstraTowns.getEconomy().withdrawPlayer(player, Config.TOWN_CLAIM_PRICE.<Integer>get().doubleValue());
                 break;
             }
 
