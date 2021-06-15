@@ -19,6 +19,7 @@ public enum Config {
     TOWN_CAMPEMENT_MAX_CLAIMS(4),
     TOWN_CREATION_PRICE(5000),
     TOWN_CLAIM_PRICE(50),
+    TOWN_OUTPOST_PRICE(250),
     ;
 
     private Object value;

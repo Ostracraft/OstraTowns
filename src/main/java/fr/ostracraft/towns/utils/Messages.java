@@ -45,10 +45,12 @@ public enum Messages {
     TOWN_CLAIM_CAMPEMENT_LIMIT_REACHED("%prefix% &cVous avez atteint votre limite ce claim en tant que Campement: &4{0} claims maximum&c."),
     TOWN_CLAIM_ALREADY_OWNED("%prefix% &cCe claim est déjà possédé par la ville &4{0} &c!"),
     TOWN_CLAIM_CLAIMED("%prefix% &aVous avez claim le chunk &ex: {0}, z: {1}&a."),
+    TOWN_CLAIM_OUTPOST_CLAIMED("%prefix% &aVous avez claim le chunk &ex: {0}, z: {1}&a en tant qu'outpost."),
     TOWN_NOT_YOUR_CLAIM("%prefix% &cCe chunk ne vous appartient pas, il appartient à la ville &4{0}&c."),
     TOWN_CLAIM_UNCLAIMED("%prefix% &aVous avez unclaim le chunk &ex: {0}, z: {1}&a."),
     TOWN_CLAIM_ENTER_ACTIONBAR("&6Entrée sur le territoire de &e{0}"),
-    TOWN_CLAIM_NOT_ENOUGH_MONEY("%prefix% &cVous n'avez pas assez d'argent pour acheter ce claim: &4{0} pixels&c.")
+    TOWN_CLAIM_NOT_ENOUGH_MONEY("%prefix% &cVous n'avez pas assez d'argent pour acheter ce claim: &4{0} pixels&c."),
+    TOWN_CLAIM_SINGLE("%prefix% &cCe claim n'est rataché à aucun autre claim de votre ville ! Si vous éloigner de votre ville, il vous faut effectuer un &4claim outpost &c(qui coûte plus cher)."),
     ;
     private String value;
 

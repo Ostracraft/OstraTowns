@@ -18,12 +18,14 @@ public class TownBlock {
     private final int x;
     private final int z;
     private int townId;
+    private boolean outpost;
     private static final HashMap<String, TownBlock> loadedBlocks = new HashMap<>();
 
-    TownBlock(int x, int z, int townId) {
+    public TownBlock(int x, int z, int townId, boolean outpost) {
         this.x = x;
         this.z = z;
         this.townId = townId;
+        this.outpost = outpost;
     }
 
     public static TownBlock getTownBlockAt(Location location) {
@@ -32,7 +34,7 @@ public class TownBlock {
         if (isCached(chunk.getX(), chunk.getZ())) {
             return getFromCache(chunk.getX(), chunk.getZ());
         }
-        return new TownBlock(chunk.getX(), chunk.getZ(), 0);
+        return new TownBlock(chunk.getX(), chunk.getZ(), 0, false);
     }
 
     public static boolean isCached(int x, int z) {
@@ -68,7 +70,8 @@ public class TownBlock {
             TownBlock townBlock = new TownBlock(
                     response.get("x"),
                     response.get("z"),
-                    response.get("townId")
+                    response.get("townId"),
+                    response.get("outpost")
             );
             townBlock.cache();
         }
@@ -110,7 +113,28 @@ public class TownBlock {
         if (isCached(getX(), getZ())) {
             DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `townId`=? WHERE `x`=? AND `z`=?", townId, getX(), getZ());
         } else {
-            DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `townId`) VALUES(?, ?, ?)", getX(), getZ(), townId);
+            DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `townId`, `outpost`) VALUES(?, ?, ?, ?)", getX(), getZ(), townId, isOutpost());
+        }
+        this.refresh();
+
+        return this;
+    }
+
+    public boolean isOutpost() {
+        return outpost;
+    }
+
+    public TownBlock setOutpost(boolean outpost) {
+        this.outpost = outpost;
+
+        if (getTownId() == 0) {
+            throw new IllegalStateException("Trying to set an unclaimed chunk as an outpost");
+        }
+
+        if (isCached(getX(), getZ())) {
+            DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `outpost`=? WHERE `x`=? AND `z`=?", outpost, getX(), getZ());
+        } else {
+            DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `townId`, `outpost`) VALUES(?, ?, ?, ?)", getX(), getZ(), getTownId(), outpost);
         }
         this.refresh();
 

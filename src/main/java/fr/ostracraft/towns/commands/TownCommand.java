@@ -7,6 +7,7 @@ import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.Messages;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -357,7 +358,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 }
 
                 TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
-                if(townBlock.getTownId() > 0) {
+                if (townBlock.getTownId() > 0) {
                     Town owner = Town.getTownById(townBlock.getTownId());
                     if (owner == null)
                         player.sendMessage(Messages.ERROR_UNKNOWN.format());
@@ -365,14 +366,43 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                         player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(owner.getName()));
                     break;
                 }
+
+                boolean isOutpost = subArgs.size() > 0 && subArgs.get(0).equalsIgnoreCase("outpost");
+                if (TownBlock.getBlocksOwned(town).size() > 0) {
+                    boolean isSingle = true;
+                    // Check for townblocks above, below, at left and at right
+                    mainFor:
+                    for (int i = -1; i < 2; i++) {
+                        for (int j = -1; j < 2; j++) {
+                            if (Math.abs(i) == Math.abs(j))
+                                continue;
+                            Location currentLocation = player.getLocation().getWorld().getChunkAt(townBlock.getX() + i, townBlock.getZ() + j).getBlock(0, 0, 0).getLocation();
+                            TownBlock currentBlock = TownBlock.getTownBlockAt(currentLocation);
+                            if (currentBlock.getTownId() == resident.getTownId()) {
+                                isSingle = false;
+                                break mainFor;
+                            }
+                        }
+                    }
+                    if (isSingle && !isOutpost) {
+                        player.sendMessage(Messages.TOWN_CLAIM_SINGLE.format());
+                        break;
+                    }
+                }
+                int price = isOutpost ? Config.TOWN_OUTPOST_PRICE.get() : Config.TOWN_CLAIM_PRICE.get();
                 double playerBalance = OstraTowns.getEconomy().getBalance(player);
-                if(playerBalance < Config.TOWN_CLAIM_PRICE.<Integer>get()) {
-                    player.sendMessage(Messages.TOWN_CLAIM_NOT_ENOUGH_MONEY.format(Config.TOWN_CLAIM_PRICE.<Integer>get()));
+                if (playerBalance < price) {
+                    player.sendMessage(Messages.TOWN_CLAIM_NOT_ENOUGH_MONEY.format(price));
                     break;
                 }
                 townBlock.setTownId(resident.getTownId());
-                player.sendMessage(Messages.TOWN_CLAIM_CLAIMED.format(townBlock.getX(), townBlock.getZ()));
-                OstraTowns.getEconomy().withdrawPlayer(player, Config.TOWN_CLAIM_PRICE.<Integer>get().doubleValue());
+                if (isOutpost) {
+                    player.sendMessage(Messages.TOWN_CLAIM_OUTPOST_CLAIMED.format(townBlock.getX(), townBlock.getZ()));
+                    townBlock.setOutpost(true);
+                } else {
+                    player.sendMessage(Messages.TOWN_CLAIM_CLAIMED.format(townBlock.getX(), townBlock.getZ()));
+                }
+                OstraTowns.getEconomy().withdrawPlayer(player, price);
                 break;
             }
 
