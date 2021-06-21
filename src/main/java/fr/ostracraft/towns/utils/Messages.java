@@ -22,6 +22,7 @@ public enum Messages {
     TOWN_NOT_IN_TOWN("%prefix% &cVous ne faites pas parti d'une ville !"),
     TOWN_ALREADY_EXISTS("%prefix% &cUne ville avec ne nom existe déjà !"),
     TOWN_MINIMUM_BOURG("%prefix% &cCette commande est disponible à partir de &4BOURG&c. Merci de faire l'amélioration."),
+    TOWN_TELEPORTED("%prefix% &aVous avez été téléporté."),
 
     TOWN_LEAVE_MAYOR("%prefix% &cVous ne pouvez pas quitter votre ville, vous êtes le maire. Vous pouvez la supprimer avec &4/ville supprimer &cou alors définir un nouveau maire &4/ville permission set <joueur> maire&c."),
     TOWN_LEAVE_PLAYER("%prefix% &aVous avez quitté votre ville."),

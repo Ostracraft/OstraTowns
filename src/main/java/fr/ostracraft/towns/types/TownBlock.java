@@ -2,8 +2,10 @@ package fr.ostracraft.towns.types;
 
 import fr.ostracraft.towns.DatabaseManager;
 import fr.ostracraft.towns.utils.Config;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -17,13 +19,15 @@ public class TownBlock {
 
     private final int x;
     private final int z;
+    private final String world;
     private int townId;
     private boolean outpost;
     private static final HashMap<String, TownBlock> loadedBlocks = new HashMap<>();
 
-    public TownBlock(int x, int z, int townId, boolean outpost) {
+    public TownBlock(int x, int z, String world, int townId, boolean outpost) {
         this.x = x;
         this.z = z;
+        this.world = world;
         this.townId = townId;
         this.outpost = outpost;
     }
@@ -34,7 +38,7 @@ public class TownBlock {
         if (isCached(chunk.getX(), chunk.getZ())) {
             return getFromCache(chunk.getX(), chunk.getZ());
         }
-        return new TownBlock(chunk.getX(), chunk.getZ(), 0, false);
+        return new TownBlock(chunk.getX(), chunk.getZ(), location.getWorld().getName(), 0, false);
     }
 
     public static boolean isCached(int x, int z) {
@@ -70,6 +74,7 @@ public class TownBlock {
             TownBlock townBlock = new TownBlock(
                     response.get("x"),
                     response.get("z"),
+                    response.get("world"),
                     response.get("townId"),
                     response.get("outpost")
             );
@@ -97,6 +102,14 @@ public class TownBlock {
         return z;
     }
 
+    public World getWorld() {
+        return Bukkit.getWorld(world);
+    }
+
+    public String getWorldName() {
+        return world;
+    }
+
     public int getTownId() {
         return townId;
     }
@@ -113,7 +126,7 @@ public class TownBlock {
         if (isCached(getX(), getZ())) {
             DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `townId`=? WHERE `x`=? AND `z`=?", townId, getX(), getZ());
         } else {
-            DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `townId`, `outpost`) VALUES(?, ?, ?, ?)", getX(), getZ(), townId, isOutpost());
+            DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `world`, `townId`, `outpost`) VALUES(?, ?, ?, ?, ?)", getX(), getZ(), getWorldName(), townId, isOutpost());
         }
         this.refresh();
 
@@ -134,11 +147,15 @@ public class TownBlock {
         if (isCached(getX(), getZ())) {
             DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `outpost`=? WHERE `x`=? AND `z`=?", outpost, getX(), getZ());
         } else {
-            DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `townId`, `outpost`) VALUES(?, ?, ?, ?)", getX(), getZ(), getTownId(), outpost);
+            DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `world`, `townId`, `outpost`) VALUES(?, ?, ?, ?)", getX(), getZ(), getWorldName(), getTownId(), outpost);
         }
         this.refresh();
 
         return this;
+    }
+
+    public Chunk getChunk() {
+        return getWorld().getChunkAt(getX(), getZ());
     }
 
     @Override
