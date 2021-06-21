@@ -390,6 +390,16 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
 
+                if (isOutpost) {
+                    List<TownBlock> outposts = TownBlock.getBlocksOwned(town)
+                            .stream().filter(TownBlock::isOutpost)
+                            .collect(Collectors.toList());
+                    if(outposts.size() >= town.getRank().getMaxOutposts()) {
+                        player.sendMessage(Messages.TOWN_CLAIM_MAX_OUTPOST_REACHED.format(town.getRank().getMaxOutposts()));
+                        break;
+                    }
+                }
+
                 int price = isOutpost ? Config.TOWN_OUTPOST_PRICE.get() : Config.TOWN_CLAIM_PRICE.get();
                 double playerBalance = OstraTowns.getEconomy().getBalance(player);
                 if (playerBalance < price) {

@@ -1,8 +1,19 @@
 package fr.ostracraft.towns.types;
 
 public enum TownRank {
-    CAMPEMENT,
-    BOURG,
-    CITY,
-    KINGDOM
+    CAMPEMENT(1),
+    BOURG(3),
+    VILLAGE(4),
+    CITY(5),
+    KINGDOM(7);
+
+    private int maxOutposts;
+
+    TownRank(int maxOutposts) {
+        this.maxOutposts = maxOutposts;
+    }
+
+    public int getMaxOutposts() {
+        return maxOutposts;
+    }
 }
