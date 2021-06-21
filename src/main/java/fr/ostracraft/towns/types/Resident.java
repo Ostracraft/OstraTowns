@@ -47,6 +47,8 @@ public class Resident {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(resident.getUuid()));
         if (!resident.getUsername().equalsIgnoreCase(offlinePlayer.getName()))
             resident.setUsername(offlinePlayer.getName());
+        if (Town.getTownById(resident.getTownId()) == null)
+            resident.setTownId(0);
         loadedResidents.put(resident.getUuid(), resident);
         return resident;
     }

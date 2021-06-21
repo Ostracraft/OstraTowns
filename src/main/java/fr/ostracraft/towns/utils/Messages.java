@@ -18,11 +18,14 @@ public enum Messages {
     ERROR_JOIN_1("%prefix% &cUne erreur est survenue, merci de contacter le staff &e(Code erreur &6TOWNS_JOIN_1&e)"),
 
     TOWN_CREATED("%prefix% &aVous avez créer la ville &e{0} &a!"),
+    TOWN_DELETED("%prefix% &aVotre ville &e{0} &aa été supprimée."),
     TOWN_ALREADY_IN_TOWN("%prefix% &cVous faites déjà parti d'une ville !"),
     TOWN_NOT_IN_TOWN("%prefix% &cVous ne faites pas parti d'une ville !"),
     TOWN_ALREADY_EXISTS("%prefix% &cUne ville avec ne nom existe déjà !"),
     TOWN_MINIMUM_BOURG("%prefix% &cCette commande est disponible à partir de &4BOURG&c. Merci de faire l'amélioration."),
     TOWN_TELEPORTED("%prefix% &aVous avez été téléporté."),
+    TOWN_TO_CONFIRM("%prefix% &6Êtes vous sûr de vouloir faire cela ? Si oui, faites la commande &e/town confirm&6. Cette proposition expirera dans &e60 secondes&6."),
+    TOWN_NOTHING_TO_CONFIRM("%prefix% &cVous n'avez rien à confirmer !"),
 
     TOWN_LEAVE_MAYOR("%prefix% &cVous ne pouvez pas quitter votre ville, vous êtes le maire. Vous pouvez la supprimer avec &4/ville supprimer &cou alors définir un nouveau maire &4/ville permission set <joueur> maire&c."),
     TOWN_LEAVE_PLAYER("%prefix% &aVous avez quitté votre ville."),

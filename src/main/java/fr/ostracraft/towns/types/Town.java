@@ -2,6 +2,7 @@ package fr.ostracraft.towns.types;
 
 import fr.ostracraft.towns.DatabaseManager;
 import fr.ostracraft.towns.utils.Config;
+import fr.ostracraft.towns.utils.Messages;
 import fr.ostracraft.towns.utils.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -214,6 +215,18 @@ public class Town {
                 player.sendMessage(message);
             }
         }
+    }
+
+    public void delete() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Resident resident = Resident.getResident(player);
+            if (resident.getTownId() == getId()) {
+                player.sendMessage(Messages.TOWN_DELETED.format(getName()));
+                resident.setTownId(0);
+            }
+        }
+        DatabaseManager.send("DELETE FROM `ot_towns` WHERE `id`=?", getId());
+        loadedTowns.remove(getId());
     }
 
     @Override

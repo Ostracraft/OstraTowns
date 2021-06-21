@@ -1,5 +1,6 @@
 package fr.ostracraft.towns.commands;
 
+import fr.ostracraft.towns.ConfirmManager;
 import fr.ostracraft.towns.InviteManager;
 import fr.ostracraft.towns.OstraTowns;
 import fr.ostracraft.towns.types.*;
@@ -70,6 +71,25 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 resident.setTownId(town.getId());
                 player.sendMessage(Messages.TOWN_CREATED.format(name));
                 OstraTowns.getEconomy().withdrawPlayer(player, Config.TOWN_CREATION_PRICE.<Integer>get().doubleValue());
+                break;
+            }
+
+            // Delete
+            case "delete":
+            case "disband": {
+                if(resident.getTownId() < 1) {
+                    player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                    break;
+                }
+                if(!resident.isMayor()) {
+                    player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE));
+                    break;
+                }
+                ConfirmManager.add(player, player1 -> {
+                    Town town = Town.getTownById(resident.getTownId());
+                    assert town != null;
+                    town.delete();
+                });
                 break;
             }
 
@@ -477,6 +497,15 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 break;
             }
 
+            // Confirm
+            case "confirm":
+            case "confirmer": {
+                if(!ConfirmManager.confirm(player.getUniqueId().toString())) {
+                    player.sendMessage(Messages.TOWN_NOTHING_TO_CONFIRM.format());
+                }
+                break;
+            }
+
             default: {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue"));
                 break;
@@ -491,7 +520,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
         System.out.println(args.length);
         System.out.println(Arrays.asList(args));
         if (args.length == 1) {
-            return Arrays.asList("create", "leave", "kick", "permission", "invite", "claim", "unclaim", "outpost");
+            return Arrays.asList("create", "delete", "leave", "kick", "permission", "invite", "claim", "unclaim", "outpost", "confirm");
         } else {
             String currentArg = args[0];
             if (currentArg.equalsIgnoreCase("kick") ||
