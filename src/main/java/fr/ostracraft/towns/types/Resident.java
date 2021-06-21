@@ -13,11 +13,10 @@ import java.util.UUID;
 @SuppressWarnings({"unused", "UnusedReturnValue", "BooleanMethodIsAlwaysInverted"})
 public class Resident {
 
+    private static final HashMap<String, Resident> loadedResidents = new HashMap<>();
     private final String uuid;
     private String username;
     private int townId;
-
-    private static final HashMap<String, Resident> loadedResidents = new HashMap<>();
 
     Resident(String uuid, String username, int townId) {
         this.uuid = uuid;
@@ -129,11 +128,11 @@ public class Resident {
     }
 
     public boolean isAbove(Resident target) {
-        if(this.isMayor())
+        if (this.isMayor())
             return true;
-        if(this.isAssistant())
+        if (this.isAssistant())
             return target.isMayor() == target.isAssistant();
-        if(this.isMember())
+        if (this.isMember())
             return !target.isMayor() && !target.isAssistant() && !target.isMember();
         return false;
     }

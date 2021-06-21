@@ -24,16 +24,24 @@ public class OstraTowns extends JavaPlugin {
 
     private static Economy economy;
 
+    public static OstraTowns get() {
+        return getPlugin(OstraTowns.class);
+    }
+
+    public static Economy getEconomy() {
+        return economy;
+    }
+
     @Override
     @SuppressWarnings("unused")
     public void onEnable() {
         final Plugin VAULT = Bukkit.getPluginManager().getPlugin("Vault");
-        if(VAULT == null || !VAULT.isEnabled()) {
+        if (VAULT == null || !VAULT.isEnabled()) {
             getLogger().severe("Missing VAULT dependency, disabling...");
             setEnabled(false);
             return;
         }
-        if(!setupEconomy()) {
+        if (!setupEconomy()) {
             getLogger().severe("Failed to setup VaultAPI economy, disabling...");
             setEnabled(false);
             return;
@@ -75,7 +83,7 @@ public class OstraTowns extends JavaPlugin {
     private void registerListeners() {
         List<Class<?>> classes = ReflectionUtil.getClasses(getClass().getPackageName() + ".listeners");
         for (Class<?> clazz : classes) {
-            if(!Listener.class.isAssignableFrom(clazz))
+            if (!Listener.class.isAssignableFrom(clazz))
                 continue;
             try {
                 Listener listener = (Listener) clazz.getConstructor().newInstance();
@@ -86,17 +94,9 @@ public class OstraTowns extends JavaPlugin {
         }
     }
 
-    public static OstraTowns get() {
-        return getPlugin(OstraTowns.class);
-    }
-
     @NotNull
     @Override
     public File getFile() {
         return super.getFile();
-    }
-
-    public static Economy getEconomy() {
-        return economy;
     }
 }

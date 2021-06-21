@@ -55,8 +55,7 @@ public enum Messages {
     TOWN_CLAIM_ENTER_ACTIONBAR("&6Entrée sur le territoire de &e{0}"),
     TOWN_CLAIM_NOT_ENOUGH_MONEY("%prefix% &cVous n'avez pas assez d'argent pour acheter ce claim: &4{0} pixels&c."),
     TOWN_CLAIM_SINGLE("%prefix% &cCe claim n'est rataché à aucun autre claim de votre ville ! Si vous éloigner de votre ville, il vous faut effectuer un &4claim outpost &c(qui coûte plus cher)."),
-    TOWN_CLAIM_MAX_OUTPOST_REACHED("%prefix% &cVous avez atteint le nombre maximum d'outposts pour votre rang de ville. (&4{0}&c)")
-    ;
+    TOWN_CLAIM_MAX_OUTPOST_REACHED("%prefix% &cVous avez atteint le nombre maximum d'outposts pour votre rang de ville. (&4{0}&c)");
     private String value;
 
     Messages(String value) {
@@ -67,9 +66,9 @@ public enum Messages {
         try {
             File file = new File(OstraTowns.get().getDataFolder(), "messages.yml");
             if (!file.exists()) {
-                if(!file.getParentFile().exists() && !file.getParentFile().mkdirs())
+                if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
                     return false;
-                if(!file.createNewFile())
+                if (!file.createNewFile())
                     return false;
             }
             YamlConfiguration config = new YamlConfiguration();
@@ -96,7 +95,7 @@ public enum Messages {
         for (int i = 0; i < args.length; i++) {
             s = s.replace("{" + i + "}", String.valueOf(args[i]));
         }
-        if(!toString().equalsIgnoreCase("PREFIX"))
+        if (!toString().equalsIgnoreCase("PREFIX"))
             s = s.replace("%prefix%", PREFIX.format());
         return StringUtil.colored(s);
     }

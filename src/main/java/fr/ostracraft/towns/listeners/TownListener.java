@@ -55,13 +55,13 @@ public class TownListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         // Check if old chunk is different than the new
-        if(event.getTo() == null)
+        if (event.getTo() == null)
             return;
-        if(!event.getFrom().getChunk().equals(event.getTo().getChunk())) {
+        if (!event.getFrom().getChunk().equals(event.getTo().getChunk())) {
             TownBlock townBlockOld = TownBlock.getTownBlockAt(event.getFrom());
             TownBlock townBlockNew = TownBlock.getTownBlockAt(event.getTo());
-            if(townBlockOld.getTownId() != townBlockNew.getTownId()) {
-                if(townBlockNew.getTownId() < 1) {
+            if (townBlockOld.getTownId() != townBlockNew.getTownId()) {
+                if (townBlockNew.getTownId() < 1) {
                     event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(Messages.TOWN_CLAIM_ENTER_ACTIONBAR.format("Territoire libre")));
                 } else {
                     Town town = Town.getTownById(townBlockNew.getTownId());
@@ -78,10 +78,10 @@ public class TownListener implements Listener {
         Resident resident = Resident.getResident(player);
         Block block = event.getBlock();
         TownBlock townBlock = TownBlock.getTownBlockAt(block.getLocation());
-        if(townBlock.getTownId() < 1)
+        if (townBlock.getTownId() < 1)
             return;
         Town town = Town.getTownById(townBlock.getTownId());
-        if(town == null) {
+        if (town == null) {
             player.sendMessage(Messages.ERROR_UNKNOWN.format());
             return;
         }
@@ -90,7 +90,7 @@ public class TownListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if(resident.isMayor() || resident.isAssistant() || resident.isMember())
+        if (resident.isMayor() || resident.isAssistant() || resident.isMember())
             return;
         for (Material material : blockedTypes) {
             if (block.getType().equals(material)) {
@@ -107,10 +107,10 @@ public class TownListener implements Listener {
         Resident resident = Resident.getResident(player);
         Block block = event.getBlock();
         TownBlock townBlock = TownBlock.getTownBlockAt(block.getLocation());
-        if(townBlock.getTownId() < 1)
+        if (townBlock.getTownId() < 1)
             return;
         Town town = Town.getTownById(townBlock.getTownId());
-        if(town == null) {
+        if (town == null) {
             player.sendMessage(Messages.ERROR_UNKNOWN.format());
             return;
         }
@@ -119,7 +119,7 @@ public class TownListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if(resident.isMayor() || resident.isAssistant() || resident.isMember())
+        if (resident.isMayor() || resident.isAssistant() || resident.isMember())
             return;
         for (Material material : blockedTypes) {
             if (block.getType().equals(material)) {
@@ -135,13 +135,13 @@ public class TownListener implements Listener {
         Player player = event.getPlayer();
         Resident resident = Resident.getResident(player);
         Block block = event.getClickedBlock();
-        if(block == null)
+        if (block == null)
             return;
         TownBlock townBlock = TownBlock.getTownBlockAt(block.getLocation());
-        if(townBlock.getTownId() < 1)
+        if (townBlock.getTownId() < 1)
             return;
         Town town = Town.getTownById(townBlock.getTownId());
-        if(town == null) {
+        if (town == null) {
             player.sendMessage(Messages.ERROR_UNKNOWN.format());
             return;
         }
@@ -150,7 +150,7 @@ public class TownListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if(resident.isMayor() || resident.isAssistant() || resident.isMember())
+        if (resident.isMayor() || resident.isAssistant() || resident.isMember())
             return;
         for (Material material : blockedTypes) {
             if (block.getType().equals(material)) {

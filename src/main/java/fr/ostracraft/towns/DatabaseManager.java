@@ -15,13 +15,13 @@ import java.util.List;
 
 public class DatabaseManager {
 
-    private static HikariDataSource dataSource;
     private static final String DB_HOST = Config.DB_HOST.get();
     private static final int DB_PORT = Config.DB_PORT.get();
     private static final String DB_USER = Config.DB_USER.get();
     private static final String DB_PASSWORD = Config.DB_PASSWORD.get();
     private static final String DB_DATABASE = Config.DB_DATABASE.get();
     private static final boolean DB_SSL = Config.DB_SSL.get();
+    private static HikariDataSource dataSource;
 
     public static void init() {
         /*
@@ -95,7 +95,7 @@ public class DatabaseManager {
                 statement.setObject(i + 1, args[i]);
             }
             ResultSet resultSet = statement.executeQuery();
-            while(resultSet.next()) {
+            while (resultSet.next()) {
                 HashMap<String, Object> hashMap = new HashMap<>();
                 for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
                     String name = resultSet.getMetaData().getColumnName(i + 1);

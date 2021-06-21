@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 public class ConfirmManager {
 
-    private static HashMap<String, Consumer<Player>> hashMap = new HashMap<>();
+    private static final HashMap<String, Consumer<Player>> hashMap = new HashMap<>();
 
     public static HashMap<String, Consumer<Player>> getHashMap() {
         return hashMap;
@@ -33,7 +33,7 @@ public class ConfirmManager {
 
     public static boolean confirm(String uuid) {
         Player player = Bukkit.getPlayer(UUID.fromString(uuid));
-        if(player != null && player.isOnline() && getHashMap().containsKey(uuid)) {
+        if (player != null && player.isOnline() && getHashMap().containsKey(uuid)) {
             getHashMap().get(uuid).accept(player);
             getHashMap().remove(uuid);
             return true;

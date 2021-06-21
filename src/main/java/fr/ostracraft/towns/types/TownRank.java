@@ -7,7 +7,7 @@ public enum TownRank {
     CITY(5),
     KINGDOM(7);
 
-    private int maxOutposts;
+    private final int maxOutposts;
 
     TownRank(int maxOutposts) {
         this.maxOutposts = maxOutposts;

@@ -63,7 +63,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 double playerBalance = OstraTowns.getEconomy().getBalance(player);
-                if(playerBalance < Config.TOWN_CREATION_PRICE.<Integer>get()) {
+                if (playerBalance < Config.TOWN_CREATION_PRICE.<Integer>get()) {
                     player.sendMessage(Messages.TOWN_CLAIM_NOT_ENOUGH_MONEY.format(Config.TOWN_CREATION_PRICE.<Integer>get()));
                     break;
                 }
@@ -77,11 +77,11 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             // Delete
             case "delete":
             case "disband": {
-                if(resident.getTownId() < 1) {
+                if (resident.getTownId() < 1) {
                     player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
                     break;
                 }
-                if(!resident.isMayor()) {
+                if (!resident.isMayor()) {
                     player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE));
                     break;
                 }
@@ -131,11 +131,11 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     break;
                 }
                 Resident target = Resident.getResident(subArgs.get(0));
-                if(target == null || target.getTownId() != resident.getTownId()) {
+                if (target == null || target.getTownId() != resident.getTownId()) {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("Ce membre ne fait pas parti de votre ville"));
                     break;
                 }
-                if(!resident.isAbove(target)) {
+                if (!resident.isAbove(target)) {
                     player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format("Vous n'avez pas un rang supérieur à &4" + target.getUsername() + "&c"));
                     break;
                 }
@@ -288,7 +288,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
                     break;
                 }
-                if(!resident.isAssistant() && !resident.isMayor()) {
+                if (!resident.isAssistant() && !resident.isMayor()) {
                     player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                     break;
                 }
@@ -327,11 +327,11 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             }
             case "join":
             case "rejoindre": {
-                if(resident.getTownId() > 0) {
+                if (resident.getTownId() > 0) {
                     player.sendMessage(Messages.TOWN_ALREADY_IN_TOWN.format());
                     break;
                 }
-                if(subArgs.size() < 1) {
+                if (subArgs.size() < 1) {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("Merci de saisir le nom de la ville"));
                     break;
                 }
@@ -412,7 +412,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     List<TownBlock> outposts = TownBlock.getBlocksOwned(town)
                             .stream().filter(TownBlock::isOutpost)
                             .collect(Collectors.toList());
-                    if(outposts.size() >= town.getRank().getMaxOutposts()) {
+                    if (outposts.size() >= town.getRank().getMaxOutposts()) {
                         player.sendMessage(Messages.TOWN_CLAIM_MAX_OUTPOST_REACHED.format(town.getRank().getMaxOutposts()));
                         break;
                     }
@@ -500,7 +500,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             // Confirm
             case "confirm":
             case "confirmer": {
-                if(!ConfirmManager.confirm(player.getUniqueId().toString())) {
+                if (!ConfirmManager.confirm(player.getUniqueId().toString())) {
                     player.sendMessage(Messages.TOWN_NOTHING_TO_CONFIRM.format());
                 }
                 break;

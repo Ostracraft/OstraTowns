@@ -5,7 +5,7 @@ website: https://ostracraft.jimdofree.com
 main: fr.ostracraft.towns.OstraTowns
 version: @version@
 api-version: @apiVersion@
-softdepend: [Vault]
+softdepend: [ Vault ]
 commands:
   town:
     aliases: [ "ville", "t", "vi" ]

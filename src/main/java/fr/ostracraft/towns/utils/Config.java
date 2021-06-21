@@ -33,9 +33,9 @@ public enum Config {
         try {
             File file = new File(OstraTowns.get().getDataFolder(), "config.yml");
             if (!file.exists()) {
-                if(!file.getParentFile().exists() && !file.getParentFile().mkdirs())
+                if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
                     return false;
-                if(!file.createNewFile())
+                if (!file.createNewFile())
                     return false;
             }
             YamlConfiguration config = new YamlConfiguration();

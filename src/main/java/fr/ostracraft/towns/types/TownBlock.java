@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class TownBlock {
 
+    private static final HashMap<String, TownBlock> loadedBlocks = new HashMap<>();
     private final int x;
     private final int z;
     private final String world;
     private int townId;
     private boolean outpost;
-    private static final HashMap<String, TownBlock> loadedBlocks = new HashMap<>();
 
     public TownBlock(int x, int z, String world, int townId, boolean outpost) {
         this.x = x;
@@ -43,22 +43,6 @@ public class TownBlock {
 
     public static boolean isCached(int x, int z) {
         return loadedBlocks.containsKey(x + ":" + z);
-    }
-
-    public void cache() {
-        if (!isCached(getX(), getZ()))
-            loadedBlocks.put(getX() + ":" + getZ(), this);
-    }
-
-    public void removeFromCache() {
-        if (isCached(getX(), getZ())) {
-            loadedBlocks.remove(getX() + ":" + getZ());
-        }
-    }
-
-    public void refresh() {
-        this.removeFromCache();
-        this.cache();
     }
 
     @Nullable
@@ -92,6 +76,22 @@ public class TownBlock {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 .values()
         );
+    }
+
+    public void cache() {
+        if (!isCached(getX(), getZ()))
+            loadedBlocks.put(getX() + ":" + getZ(), this);
+    }
+
+    public void removeFromCache() {
+        if (isCached(getX(), getZ())) {
+            loadedBlocks.remove(getX() + ":" + getZ());
+        }
+    }
+
+    public void refresh() {
+        this.removeFromCache();
+        this.cache();
     }
 
     public int getX() {

@@ -17,16 +17,15 @@ import java.util.List;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class Town {
 
+    private static final HashMap<Integer, Town> loadedTowns = new HashMap<>();
     private final int id;
+    private final long creation;
     private String name;
     private String mayor;
     private List<String> assistants;
     private List<String> members;
     private Location spawn;
     private TownRank rank;
-    private final long creation;
-
-    private static final HashMap<Integer, Town> loadedTowns = new HashMap<>();
 
     Town(int id, String name, String mayor, List<String> assistants, List<String> members, Location spawn, TownRank rank, long creation) {
         this.id = id;
@@ -73,7 +72,7 @@ public class Town {
     @Nullable
     public static Town getTownNamed(String name) {
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `name`=?", name);
-        if(response == null)
+        if (response == null)
             return null;
         if (loadedTowns.containsKey(response.<Integer>get("id")))
             return loadedTowns.get(response.<Integer>get("id"));
