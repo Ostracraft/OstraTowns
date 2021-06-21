@@ -517,10 +517,8 @@ public class TownCommand implements CommandExecutor, TabCompleter {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        System.out.println(args.length);
-        System.out.println(Arrays.asList(args));
         if (args.length == 1) {
-            return Arrays.asList("create", "delete", "leave", "kick", "permission", "invite", "claim", "unclaim", "outpost", "confirm");
+            return Arrays.asList("claim", "confirm", "create", "delete", "invite", "kick", "leave", "outpost", "permission", "unclaim");
         } else {
             String currentArg = args[0];
             if (currentArg.equalsIgnoreCase("kick") ||
