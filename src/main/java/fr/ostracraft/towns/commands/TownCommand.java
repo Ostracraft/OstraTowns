@@ -14,14 +14,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TownCommand implements CommandExecutor, TabCompleter {
@@ -99,16 +97,16 @@ public class TownCommand implements CommandExecutor, TabCompleter {
 
             // Kick
             case "kick":
-            case "exclude": {
+            case "exclure": {
                 if (resident.getTownId() < 1) {
                     player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
                     break;
                 }
-                if(!resident.isAssistant() && !resident.isMayor()) {
+                if (!resident.isAssistant() && !resident.isMayor()) {
                     player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                     break;
                 }
-                if(subArgs.size() < 1) {
+                if (subArgs.size() < 1) {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("Vous devez spécifier le membre à exclure"));
                     break;
                 }
@@ -490,6 +488,31 @@ public class TownCommand implements CommandExecutor, TabCompleter {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        return Arrays.asList("create", "leave", "permission");
+        System.out.println(args.length);
+        System.out.println(Arrays.asList(args));
+        if (args.length == 1) {
+            return Arrays.asList("create", "leave", "kick", "permission", "invite", "claim", "unclaim", "outpost");
+        } else {
+            String currentArg = args[0];
+            if (currentArg.equalsIgnoreCase("kick") ||
+                    currentArg.equalsIgnoreCase("exclure") ||
+                    currentArg.equalsIgnoreCase("invite") ||
+                    currentArg.equalsIgnoreCase("inviter")) {
+                return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
+            } else if (currentArg.equalsIgnoreCase("permission") || currentArg.equalsIgnoreCase("perm")) {
+                if (args.length == 2) {
+                    return Arrays.asList("get", "set");
+                } else {
+                    if (args[1].equalsIgnoreCase("set")) {
+                        if (args.length == 3) {
+                            return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
+                        } else {
+                            return Arrays.stream(ResidentRank.values()).map(ResidentRank::toString).collect(Collectors.toList());
+                        }
+                    }
+                }
+            }
+        }
+        return Collections.emptyList();
     }
 }
