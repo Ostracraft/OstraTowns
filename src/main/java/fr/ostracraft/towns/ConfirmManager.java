@@ -6,19 +6,18 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class ConfirmManager {
 
-    private static final HashMap<String, Consumer<Player>> hashMap = new HashMap<>();
+    private static final HashMap<String, Runnable> hashMap = new HashMap<>();
 
-    public static HashMap<String, Consumer<Player>> getHashMap() {
+    public static HashMap<String, Runnable> getHashMap() {
         return hashMap;
     }
 
-    public static void add(Player player, Consumer<Player> consumer) {
+    public static void add(Player player, Runnable runnable) {
         getHashMap().remove(player.getUniqueId().toString());
-        getHashMap().put(player.getUniqueId().toString(), consumer);
+        getHashMap().put(player.getUniqueId().toString(), runnable);
         player.sendMessage(Messages.TOWN_TO_CONFIRM.format());
         new Thread(() -> {
             try {
@@ -34,7 +33,7 @@ public class ConfirmManager {
     public static boolean confirm(String uuid) {
         Player player = Bukkit.getPlayer(UUID.fromString(uuid));
         if (player != null && player.isOnline() && getHashMap().containsKey(uuid)) {
-            getHashMap().get(uuid).accept(player);
+            getHashMap().get(uuid).run();
             getHashMap().remove(uuid);
             return true;
         }

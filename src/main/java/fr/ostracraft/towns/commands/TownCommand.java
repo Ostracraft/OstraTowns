@@ -85,7 +85,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE));
                     break;
                 }
-                ConfirmManager.add(player, player1 -> {
+                ConfirmManager.add(player, () -> {
                     Town town = Town.getTownById(resident.getTownId());
                     assert town != null;
                     town.delete();
