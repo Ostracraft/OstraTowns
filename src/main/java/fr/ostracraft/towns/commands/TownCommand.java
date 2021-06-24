@@ -115,6 +115,63 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 break;
             }
 
+            // Info
+            case "information":
+            case "info": {
+                Town town;
+
+                if (subArgs.size() < 1) {
+                    if (resident.getTownId() < 1) {
+                        player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                        break;
+                    }
+                    town = Town.getTownById(resident.getTownId());
+                } else {
+                    town = Town.getTownNamed(subArgs.get(0));
+                }
+
+                if (town == null) {
+                    if(subArgs.size() < 1)
+                        player.sendMessage(Messages.ERROR_UNKNOWN.format());
+                    else
+                        player.sendMessage(Messages.TOWN_NOT_EXISTS.format(subArgs.get(0)));
+                    break;
+                }
+
+                int claims = TownBlock.getBlocksOwned(town).size();
+                long outposts = TownBlock.getBlocksOwned(town)
+                        .stream().filter(TownBlock::isOutpost).count();
+                String mayor = Resident.getResident(town.getMayor()).getUsername();
+                List<String> assistants = new ArrayList<>();
+                for (String assistantUUID : town.getAssistants()) {
+                    if (assistantUUID.trim().length() < 1)
+                        continue;
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(assistantUUID));
+                    assistants.add(offlinePlayer.getName());
+                }
+                List<String> members = new ArrayList<>();
+                for (String memberUUID : town.getMembers()) {
+                    if (memberUUID.trim().length() < 1)
+                        continue;
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(memberUUID));
+                    members.add(offlinePlayer.getName());
+                }
+                List<String> news = town.getResidents()
+                        .stream().filter(resident1 -> !resident1.isMayor() && !resident1.isAssistant() && !resident1.isMember())
+                        .map(Resident::getUsername)
+                        .collect(Collectors.toList());
+
+                player.sendMessage(Messages.TOWN_INFO_HEADER.format(town.getName()));
+                player.sendMessage(Messages.TOWN_INFO_CREATION.format(town.getFormattedCreation()));
+                player.sendMessage(Messages.TOWN_INFO_RANK.format(town.getRank()));
+                player.sendMessage(Messages.TOWN_INFO_CLAIMS.format(claims, outposts));
+                player.sendMessage(Messages.TOWN_INFO_MAYOR.format(mayor));
+                player.sendMessage(Messages.TOWN_INFO_ASSISTANTS.format(assistants.size() > 0 ? String.join(", ", assistants) : "&fAUCUN"));
+                player.sendMessage(Messages.TOWN_INFO_MEMBERS.format(members.size() > 0 ? String.join(", ", members) : "&fAUCUN"));
+                player.sendMessage(Messages.TOWN_INFO_NEWS.format(news.size() > 0 ? String.join(", ", news) : "&fAUCUN"));
+                break;
+            }
+
             // Kick
             case "kick":
             case "exclure": {
@@ -273,8 +330,8 @@ public class TownCommand implements CommandExecutor, TabCompleter {
 
                     player.sendMessage(Messages.TOWN_RANK_GET_HEADER.format());
                     player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("MAIRE", resident.isMayor() ? resident.getUsername() : Resident.getResident(town.getMayor()).getUsername()));
-                    player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("ASSISTANTS", assistants.size() > 0 ? String.join(", ", assistants) : "AUCUNS"));
-                    player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("MEMBRES", members.size() > 0 ? String.join(", ", members) : "AUCUNS"));
+                    player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("ASSISTANTS", assistants.size() > 0 ? String.join(", ", assistants) : "&fAUCUN"));
+                    player.sendMessage(Messages.TOWN_RANK_GET_ITEM.format("MEMBRES", members.size() > 0 ? String.join(", ", members) : "&fAUCUN"));
                 } else {
                     player.sendMessage(Messages.INVALID_ARGUMENTS.format("&4/ville permission <get/set>"));
                 }

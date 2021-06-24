@@ -9,6 +9,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -205,6 +209,22 @@ public class Town {
 
     public long getCreation() {
         return creation;
+    }
+
+    public String getFormattedCreation() {
+        ZonedDateTime zonedDateTime = Instant.ofEpochMilli(getCreation()).atZone(ZoneId.of("Europe/Paris"));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        return zonedDateTime.format(dateTimeFormatter);
+    }
+
+    public List<Resident> getResidents() {
+        List<Resident> residents = new ArrayList<>();
+        Resident.fetchAllResidents();
+        for (Resident resident : Resident.getLoadedResidents().values()) {
+            if(resident.getTownId() == getId())
+                residents.add(resident);
+        }
+        return residents;
     }
 
     public void messageAll(String message) {

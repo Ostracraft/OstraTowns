@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "BooleanMethodIsAlwaysInverted"})
@@ -74,6 +75,20 @@ public class Resident {
 
     public static HashMap<String, Resident> getLoadedResidents() {
         return loadedResidents;
+    }
+
+    public static void fetchAllResidents() {
+        List<DatabaseResponse> responses = DatabaseManager.getAll("SELECT * FROM `" + Config.DB_PREFIX.get() + "residents`");
+        for (DatabaseResponse response : responses) {
+            if(loadedResidents.containsKey(response.<String>get("uuid")))
+                continue;
+            Resident resident = new Resident(
+                    response.get("uuid"),
+                    response.get("username"),
+                    response.<Integer>get("townId")
+            );
+            loadedResidents.put(response.get("uuid"), resident);
+        }
     }
 
     public String getUuid() {

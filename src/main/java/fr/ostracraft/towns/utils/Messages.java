@@ -21,6 +21,7 @@ public enum Messages {
     TOWN_DELETED("%prefix% &aVotre ville &e{0} &aa été supprimée."),
     TOWN_ALREADY_IN_TOWN("%prefix% &cVous faites déjà parti d'une ville !"),
     TOWN_NOT_IN_TOWN("%prefix% &cVous ne faites pas parti d'une ville !"),
+    TOWN_NOT_EXISTS("%prefix% &cLa ville &4{0} &cn'existe pas !"),
     TOWN_ALREADY_EXISTS("%prefix% &cUne ville avec ne nom existe déjà !"),
     TOWN_MINIMUM_BOURG("%prefix% &cCette commande est disponible à partir de &4BOURG&c. Merci de faire l'amélioration."),
     TOWN_TELEPORTED("%prefix% &aVous avez été téléporté."),
@@ -55,7 +56,19 @@ public enum Messages {
     TOWN_CLAIM_ENTER_ACTIONBAR("&6Entrée sur le territoire de &e{0}"),
     TOWN_CLAIM_NOT_ENOUGH_MONEY("%prefix% &cVous n'avez pas assez d'argent pour acheter ce claim: &4{0} pixels&c."),
     TOWN_CLAIM_SINGLE("%prefix% &cCe claim n'est rataché à aucun autre claim de votre ville ! Si vous éloigner de votre ville, il vous faut effectuer un &4claim outpost &c(qui coûte plus cher)."),
-    TOWN_CLAIM_MAX_OUTPOST_REACHED("%prefix% &cVous avez atteint le nombre maximum d'outposts pour votre rang de ville. (&4{0}&c)");
+    TOWN_CLAIM_MAX_OUTPOST_REACHED("%prefix% &cVous avez atteint le nombre maximum d'outposts pour votre rang de ville. (&4{0}&c)"),
+
+    TOWN_INFO_HEADER("%prefix% &aInformations sur la ville &e{0}&a:"),
+    TOWN_INFO_CREATION("&6- &aCrée le: &e{0}"),
+    TOWN_INFO_RANK("&6- &aRang: &e{0}"),
+    TOWN_INFO_CLAIMS("&6- &aClaims: &e{0} chunks, dont {1} outposts"),
+    TOWN_INFO_MAYOR("&6- &aMaire: &e{0}"),
+    TOWN_INFO_ASSISTANTS("&6- &aAssistants: &e{0}"),
+    TOWN_INFO_MEMBERS("&6- &aMembres: &e{0}"),
+    TOWN_INFO_NEWS("&6- &aNouveaux: &e{0}"),
+    ;
+
+
     private String value;
 
     Messages(String value) {
