@@ -9,15 +9,15 @@ import java.util.UUID;
 
 public class ConfirmManager {
 
-    private static final HashMap<String, Runnable> hashMap = new HashMap<>();
+    private static final HashMap<UUID, Runnable> hashMap = new HashMap<>();
 
-    public static HashMap<String, Runnable> getHashMap() {
+    public static HashMap<UUID, Runnable> getHashMap() {
         return hashMap;
     }
 
     public static void add(Player player, Runnable runnable) {
-        getHashMap().remove(player.getUniqueId().toString());
-        getHashMap().put(player.getUniqueId().toString(), runnable);
+        getHashMap().remove(player.getUniqueId());
+        getHashMap().put(player.getUniqueId(), runnable);
         player.sendMessage(Messages.TOWN_TO_CONFIRM.format());
         new Thread(() -> {
             try {
@@ -26,12 +26,13 @@ public class ConfirmManager {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
-            getHashMap().remove(player.getUniqueId().toString());
+            getHashMap().remove(player.getUniqueId());
         }).start();
     }
 
-    public static boolean confirm(String uuid) {
-        Player player = Bukkit.getPlayer(UUID.fromString(uuid));
+    public static boolean confirm(String uuidString) {
+        UUID uuid = UUID.fromString(uuidString);
+        Player player = Bukkit.getPlayer(uuid);
         if (player != null && player.isOnline() && getHashMap().containsKey(uuid)) {
             getHashMap().get(uuid).run();
             getHashMap().remove(uuid);
