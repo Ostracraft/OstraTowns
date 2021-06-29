@@ -24,6 +24,7 @@ public class Town {
     private static final HashMap<Integer, Town> loadedTowns = new HashMap<>();
     private final int id;
     private final long creation;
+    private final TownSettings settings;
     private String name;
     private String mayor;
     private List<String> assistants;
@@ -31,7 +32,7 @@ public class Town {
     private Location spawn;
     private TownRank rank;
 
-    Town(int id, String name, String mayor, List<String> assistants, List<String> members, Location spawn, TownRank rank, long creation) {
+    Town(int id, String name, String mayor, List<String> assistants, List<String> members, Location spawn, TownRank rank, TownSettings settings, long creation) {
         this.id = id;
         this.name = name;
         this.mayor = mayor;
@@ -39,6 +40,7 @@ public class Town {
         this.members = members;
         this.spawn = spawn;
         this.rank = rank;
+        this.settings = settings;
         this.creation = creation;
     }
 
@@ -67,6 +69,7 @@ public class Town {
                 members,
                 StringUtil.stringToLocation(response.get("spawn")),
                 rank,
+                TownSettings.fromString(response.get("settings")),
                 response.get("creation")
         );
         loadedTowns.put(town.getId(), town);
@@ -93,6 +96,7 @@ public class Town {
                 members,
                 StringUtil.stringToLocation(response.get("spawn")),
                 rank,
+                TownSettings.fromString(response.get("settings")),
                 response.get("creation")
         );
         loadedTowns.put(town.getId(), town);
@@ -205,6 +209,10 @@ public class Town {
         this.rank = rank;
         DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `rank`=? WHERE `id`=?", rank.toString().toUpperCase(), getId());
         return this;
+    }
+
+    public TownSettings getSettings() {
+        return settings;
     }
 
     public long getCreation() {
