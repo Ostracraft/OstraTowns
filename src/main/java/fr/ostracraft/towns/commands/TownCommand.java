@@ -71,6 +71,12 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 SubCommandExecutor.INFO.getExecutor().accept(player, resident, subArgs);
                 break;
             }
+            // Here
+            case "here":
+            case "ici": {
+                SubCommandExecutor.HERE.getExecutor().accept(player, resident, subArgs);
+                break;
+            }
 
             // Kick
             case "kick":
@@ -274,6 +280,14 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(Messages.TOWN_INFO_ASSISTANTS.format(assistants.size() > 0 ? String.join(", ", assistants) : "&fAUCUN"));
             player.sendMessage(Messages.TOWN_INFO_MEMBERS.format(members.size() > 0 ? String.join(", ", members) : "&fAUCUN"));
             player.sendMessage(Messages.TOWN_INFO_NEWS.format(news.size() > 0 ? String.join(", ", news) : "&fAUCUN"));
+        }),
+        HERE((player, resident, subArgs) -> {
+            TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
+            Town town = Town.getTownById(townBlock.getTownId());
+            if (town == null)
+                player.sendMessage(Messages.TOWN_NOT_CLAIMED.format());
+            else
+                INFO.getExecutor().accept(player, resident, Collections.singletonList(town.getName()));
         }),
         KICK((player, resident, subArgs) -> {
             if (resident.getTownId() < 1) {
