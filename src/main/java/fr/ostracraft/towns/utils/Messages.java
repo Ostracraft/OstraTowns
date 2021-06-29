@@ -67,6 +67,9 @@ public enum Messages {
     TOWN_INFO_ASSISTANTS("&6- &aAssistants: &e{0}"),
     TOWN_INFO_MEMBERS("&6- &aMembres: &e{0}"),
     TOWN_INFO_NEWS("&6- &aNouveaux: &e{0}"),
+
+    TOWN_SETTING_UPDATED("%prefix% &aLe paramètre &e{0} &ade votre ville a été mis à jour."),
+    TOWN_SETTING_NO_SPAWN("%prefix% &cLa ville &4{0} &cn'a pas défini de spawn, ou alors vous y interdit l'accès.")
     ;
 
 

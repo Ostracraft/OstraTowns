@@ -133,6 +133,19 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 break;
             }
 
+            // SetSpawn
+            case "setspawn": {
+                SubCommandExecutor.SETSPAWN.getExecutor().accept(player, resident, subArgs);
+                break;
+            }
+
+            // Spawn
+            case "spawn":
+            case "s": {
+                SubCommandExecutor.SPAWN.getExecutor().accept(player, resident, subArgs);
+                break;
+            }
+
             default: {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue"));
                 break;
@@ -145,7 +158,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("claim", "confirm", "create", "delete", "invite", "kick", "leave", "outpost", "permission", "unclaim");
+            return Arrays.asList("claim", "confirm", "create", "delete", "invite", "kick", "leave", "outpost", "permission", "setspawn", "spawn", "unclaim");
         } else {
             String currentArg = args[0];
             if (currentArg.equalsIgnoreCase("kick") ||
@@ -646,6 +659,54 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             Location location = chunk.getBlock(8, 0, 8).getLocation();
             player.teleport(outpost.getWorld().getHighestBlockAt(location).getLocation().add(0, 1, 0));
             player.sendMessage(Messages.TOWN_TELEPORTED.format());
+        }),
+        SETSPAWN((player, resident, subArgs) -> {
+            if(resident.getTownId() < 1) {
+                player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                return;
+            }
+            if(!resident.isMayor()) {
+                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE));
+                return;
+            }
+            TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
+            if(townBlock.getTownId() != resident.getTownId()) {
+                String owner = Town.getTownById(townBlock.getTownId()) == null ? "Territoire libre" : Town.getTownById(townBlock.getTownId()).getName();
+                player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(owner));
+                return;
+            }
+            Town town = Town.getTownById(resident.getTownId());
+            assert town != null;
+            town.setSpawn(player.getLocation());
+            player.sendMessage(Messages.TOWN_SETTING_UPDATED.format("Spawn"));
+        }),
+        SPAWN((player, resident, subArgs) -> {
+            if(subArgs.size() < 1) {
+                if(resident.getTownId() < 1) {
+                    player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                    return;
+                }
+                Town town = Town.getTownById(resident.getTownId());
+                assert town != null;
+                if(town.getSpawn() == null) {
+                    player.sendMessage(Messages.TOWN_SETTING_NO_SPAWN.format(town.getName()));
+                    return;
+                }
+                player.teleport(town.getSpawn());
+                player.sendMessage(Messages.TOWN_TELEPORTED.format());
+            } else {
+                Town town = Town.getTownNamed(subArgs.get(0));
+                if(town == null) {
+                    player.sendMessage(Messages.TOWN_NOT_EXISTS.format(subArgs.get(0)));
+                    return;
+                }
+                if(town.getSpawn() == null) {
+                    player.sendMessage(Messages.TOWN_SETTING_NO_SPAWN.format(town.getName()));
+                    return;
+                }
+                player.teleport(town.getSpawn());
+                player.sendMessage(Messages.TOWN_TELEPORTED.format());
+            }
         });
 
         private final TriConsumer<Player, Resident, List<String>> executor;
