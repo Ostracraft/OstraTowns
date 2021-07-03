@@ -27,6 +27,7 @@ public enum Messages {
     TOWN_TELEPORTED("%prefix% &aVous avez été téléporté."),
     TOWN_TO_CONFIRM("%prefix% &6Êtes vous sûr de vouloir faire cela ? Si oui, faites la commande &e/town confirm&6. Cette proposition expirera dans &e60 secondes&6."),
     TOWN_NOTHING_TO_CONFIRM("%prefix% &cVous n'avez rien à confirmer !"),
+    TOWN_GUI_TITLE("%prefix% &1{0}"),
 
     TOWN_LEAVE_MAYOR("%prefix% &cVous ne pouvez pas quitter votre ville, vous êtes le maire. Vous pouvez la supprimer avec &4/ville supprimer &cou alors définir un nouveau maire &4/ville permission set <joueur> maire&c."),
     TOWN_LEAVE_PLAYER("%prefix% &aVous avez quitté votre ville."),
@@ -70,11 +71,14 @@ public enum Messages {
 
     TOWN_SETTING_UPDATED("%prefix% &aLe paramètre &e{0} &ade votre ville a été mis à jour."),
     TOWN_SETTING_NO_SPAWN("%prefix% &cLa ville &4{0} &cn'a pas défini de spawn, ou alors vous y interdit l'accès."),
+    TOWN_SETTING_PVP_DISABLED("%prefix% &cLe pvp est désactivé dans les claims de la ville &4{0} &c!"),
+    TOWN_SETTING_FIRE_DISABLED("%prefix% &cLe feu est désactivé dans les claims de la ville &4{0} &c!"),
     TOWN_SETTING_GUI_PVP("&6» &aPVP: {0}"),
     TOWN_SETTING_GUI_FIRE("&6» &aFeu: {0}"),
     TOWN_SETTING_GUI_SPAWN("&6» &aSpawn public: {0}"),
-    TOWN_SETTING_PVP_DISABLED("%prefix% &cLe pvp est désactivé dans les claims de la ville &4{0} &c!"),
-    TOWN_SETTING_FIRE_DISABLED("%prefix% &cLe feu est désactivé dans les claims de la ville &4{0} &c!"),
+
+    TOWN_UPGRADE_GUI_NAME("&6» {0}"),
+    TOWN_UPGRADE_GUI_LORE("&6- &a{0}")
     ;
 
 

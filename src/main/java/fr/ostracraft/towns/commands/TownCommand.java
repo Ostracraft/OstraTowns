@@ -153,6 +153,12 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 break;
             }
 
+            case "upgrade":
+            case "ameliorer": {
+                SubCommandExecutor.UPGRADE.getExecutor().accept(player, resident, subArgs);
+                break;
+            }
+
             default: {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue"));
                 break;
@@ -165,7 +171,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("claim", "confirm", "create", "delete", "invite", "kick", "leave", "outpost", "permission", "setspawn", "settings", "spawn", "unclaim");
+            return Arrays.asList("claim", "confirm", "create", "delete", "invite", "kick", "leave", "outpost", "permission", "setspawn", "settings", "spawn", "unclaim", "upgrade");
         } else {
             String currentArg = args[0];
             if (currentArg.equalsIgnoreCase("kick") ||
@@ -716,15 +722,26 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             }
         }),
         SETTINGS((player, resident, subArgs) -> {
-            if(resident.getTownId() < 1) {
+            if (resident.getTownId() < 1) {
                 player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
                 return;
             }
-            if(!resident.isMayor() && !resident.isAssistant()) {
+            if (!resident.isMayor() && !resident.isAssistant()) {
                 player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
                 return;
             }
             GUIManager.openSettings(player, resident);
+        }),
+        UPGRADE((player, resident, subArgs) -> {
+            if (resident.getTownId() < 1) {
+                player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                return;
+            }
+            if (!resident.isMayor() && !resident.isAssistant()) {
+                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
+                return;
+            }
+            GUIManager.openUpgrades(player, resident);
         });
 
         private final TriConsumer<Player, Resident, List<String>> executor;
