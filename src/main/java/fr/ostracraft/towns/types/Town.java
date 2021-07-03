@@ -256,8 +256,12 @@ public class Town {
                 player.sendMessage(Messages.TOWN_DELETED.format(getName()));
                 resident.setTownId(0);
             }
+            for (TownBlock townBlock : TownBlock.getBlocksOwned(this)) {
+                townBlock.removeFromCache();
+            }
+            DatabaseManager.send("DELETE FROM `" + Config.DB_PREFIX.get() + "townblocks` WHERE `townId`=?", getId());
         }
-        DatabaseManager.send("DELETE FROM `ot_towns` WHERE `id`=?", getId());
+        DatabaseManager.send("DELETE FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `id`=?", getId());
         loadedTowns.remove(getId());
     }
 
