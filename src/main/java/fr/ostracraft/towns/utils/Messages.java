@@ -69,7 +69,12 @@ public enum Messages {
     TOWN_INFO_NEWS("&6- &aNouveaux: &e{0}"),
 
     TOWN_SETTING_UPDATED("%prefix% &aLe paramètre &e{0} &ade votre ville a été mis à jour."),
-    TOWN_SETTING_NO_SPAWN("%prefix% &cLa ville &4{0} &cn'a pas défini de spawn, ou alors vous y interdit l'accès.")
+    TOWN_SETTING_NO_SPAWN("%prefix% &cLa ville &4{0} &cn'a pas défini de spawn, ou alors vous y interdit l'accès."),
+    TOWN_SETTING_GUI_PVP("&6» &aPVP: {0}"),
+    TOWN_SETTING_GUI_FIRE("&6» &aFeu: {0}"),
+    TOWN_SETTING_GUI_SPAWN("&6» &aSpawn public: {0}"),
+    TOWN_SETTING_PVP_DISABLED("%prefix% &cLe pvp est désactivé dans les claims de la ville &4{0} &c!"),
+    TOWN_SETTING_FIRE_DISABLED("%prefix% &cLe feu est désactivé dans les claims de la ville &4{0} &c!"),
     ;
 
 

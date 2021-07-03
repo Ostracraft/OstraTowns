@@ -7,13 +7,13 @@ import fr.ostracraft.towns.types.TownBlock;
 import fr.ostracraft.towns.utils.Messages;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.*;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -159,6 +159,50 @@ public class TownListener implements Listener {
                 return;
             }
         }
+    }
+
+    @EventHandler
+    public void onPVP(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player victim))
+            return;
+        TownBlock townBlock = TownBlock.getTownBlockAt(victim.getLocation());
+        if (townBlock.getTownId() > 0) {
+            Town town = Town.getTownById(townBlock.getTownId());
+            assert town != null;
+            if (!town.getSettings().isPvp()) {
+                event.setCancelled(true);
+                if (event.getDamager() instanceof Player attacker)
+                    attacker.sendMessage(Messages.TOWN_SETTING_PVP_DISABLED.format(town.getName()));
+            }
+        }
+    }
+
+    public void checkForFire(BlockEvent event) {
+        assert Cancellable.class.isAssignableFrom(event.getClass());
+        TownBlock townBlock = TownBlock.getTownBlockAt(event.getBlock().getLocation());
+        if (townBlock.getTownId() < 1)
+            return;
+        Town town = Town.getTownById(townBlock.getTownId());
+        assert town != null;
+        if(!town.getSettings().isFire())
+            ((Cancellable) event).setCancelled(true);
+
+        if(BlockIgniteEvent.class.isAssignableFrom(event.getClass()) && !town.getSettings().isFire()) {
+            if(((BlockIgniteEvent) event).isCancelled()) {
+                if(((BlockIgniteEvent) event).getIgnitingEntity() instanceof Player player)
+                    player.sendMessage(Messages.TOWN_SETTING_FIRE_DISABLED.format(town.getName()));
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockBurn(BlockBurnEvent event) {
+        checkForFire(event);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        checkForFire(event);
     }
 
 }

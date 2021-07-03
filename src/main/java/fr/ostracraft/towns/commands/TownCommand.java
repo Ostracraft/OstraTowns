@@ -1,6 +1,7 @@
 package fr.ostracraft.towns.commands;
 
 import fr.ostracraft.towns.ConfirmManager;
+import fr.ostracraft.towns.GUIManager;
 import fr.ostracraft.towns.InviteManager;
 import fr.ostracraft.towns.OstraTowns;
 import fr.ostracraft.towns.types.*;
@@ -146,6 +147,12 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 break;
             }
 
+            case "settings":
+            case "parametres": {
+                SubCommandExecutor.SETTINGS.getExecutor().accept(player, resident, subArgs);
+                break;
+            }
+
             default: {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue"));
                 break;
@@ -158,7 +165,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("claim", "confirm", "create", "delete", "invite", "kick", "leave", "outpost", "permission", "setspawn", "spawn", "unclaim");
+            return Arrays.asList("claim", "confirm", "create", "delete", "invite", "kick", "leave", "outpost", "permission", "setspawn", "settings", "spawn", "unclaim");
         } else {
             String currentArg = args[0];
             if (currentArg.equalsIgnoreCase("kick") ||
@@ -700,13 +707,24 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage(Messages.TOWN_NOT_EXISTS.format(subArgs.get(0)));
                     return;
                 }
-                if(town.getSpawn() == null) {
+                if(town.getSpawn() == null || (town.getId() != resident.getTownId() && !town.getSettings().isPublicSpawn())) {
                     player.sendMessage(Messages.TOWN_SETTING_NO_SPAWN.format(town.getName()));
                     return;
                 }
                 player.teleport(town.getSpawn());
                 player.sendMessage(Messages.TOWN_TELEPORTED.format());
             }
+        }),
+        SETTINGS((player, resident, subArgs) -> {
+            if(resident.getTownId() < 1) {
+                player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                return;
+            }
+            if(!resident.isMayor() && !resident.isAssistant()) {
+                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
+                return;
+            }
+            GUIManager.openSettings(player, resident);
         });
 
         private final TriConsumer<Player, Resident, List<String>> executor;

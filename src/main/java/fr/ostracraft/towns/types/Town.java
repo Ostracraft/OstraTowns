@@ -215,6 +215,11 @@ public class Town {
         return settings;
     }
 
+    public Town updateSettings() {
+        DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "towns` SET `settings`=? WHERE `id`=?", settings.toString(), getId());
+        return this;
+    }
+
     public long getCreation() {
         return creation;
     }
