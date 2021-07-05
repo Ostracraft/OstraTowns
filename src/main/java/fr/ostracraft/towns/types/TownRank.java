@@ -9,32 +9,33 @@ import java.util.Collections;
 import java.util.List;
 
 public enum TownRank {
-    CAMPEMENT(0, "#B65B00CAMPEMENT", 1, Collections.emptyList()),
-    BOURG(1, "#C3C3C3BOURG", 3, Collections.singletonList(
-            new ItemStack(Material.DIAMOND_BLOCK, 16)
+    CAMPEMENT(0, "#B65B00CAMPEMENT", 9, 1, Collections.emptyList()),
+    BOURG(1, "#C3C3C3BOURG", 50, 3, Collections.singletonList(
+            new ItemStack(Material.DIAMOND_BLOCK, 10)
     )),
-    VILLAGE(2, "#FFE020VILLAGE", 4, Arrays.asList(
+    VILLAGE(2, "#FFE020VILLAGE", 150, 4, Arrays.asList(
             new ItemStack(Material.DIAMOND_BLOCK, 32),
             new ItemStack(Material.NETHERITE_INGOT)
     )),
-    CITY(3, "#37DADBVILLE", 5, Arrays.asList(
+    CITY(3, "#37DADBVILLE", 0, 5, Arrays.asList(
             new ItemStack(Material.DIAMOND_BLOCK, 64),
-            new ItemStack(Material.NETHERITE_BLOCK)
-    )),
-    KINGDOM(4, "#37DB72ROYAUME", 7, Arrays.asList(
-            new ItemStack(Material.DIAMOND_BLOCK, 128),
-            new ItemStack(Material.EMERALD_BLOCK, 64),
             new ItemStack(Material.NETHERITE_BLOCK, 5)
+    )),
+    KINGDOM(4, "#37DB72ROYAUME", 0, 7, Arrays.asList(
+            new ItemStack(Material.DIAMOND_BLOCK, 128),
+            new ItemStack(Material.NETHERITE_BLOCK, 20)
     ));
 
     private final int priority;
     private final String prefix;
+    private final int maxClaims;
     private final int maxOutposts;
     private final List<ItemStack> price;
 
-    TownRank(int priority, String prefix, int maxOutposts, List<ItemStack> price) {
+    TownRank(int priority, String prefix, int maxClaims, int maxOutposts, List<ItemStack> price) {
         this.priority = priority;
         this.prefix = prefix;
+        this.maxClaims = maxClaims;
         this.maxOutposts = maxOutposts;
         this.price = price;
     }
@@ -45,6 +46,10 @@ public enum TownRank {
 
     public String getPrefix() {
         return StringUtil.colored(prefix);
+    }
+
+    public int getMaxClaims() {
+        return maxClaims;
     }
 
     public int getMaxOutposts() {
