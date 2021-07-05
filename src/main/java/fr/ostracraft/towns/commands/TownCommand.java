@@ -553,13 +553,12 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 return;
             }
 
-            if (town.getRank().equals(TownRank.CAMPEMENT)) {
-                List<TownBlock> townBlocks = TownBlock.getBlocksOwned(town);
-                if (townBlocks.size() >= Config.TOWN_CAMPEMENT_MAX_CLAIMS.<Integer>get()) {
-                    player.sendMessage(Messages.TOWN_CLAIM_CAMPEMENT_LIMIT_REACHED.format(Config.TOWN_CAMPEMENT_MAX_CLAIMS.<Integer>get()));
-                    return;
-                }
+            List<TownBlock> townBlocks = TownBlock.getBlocksOwned(town);
+            if (townBlocks.size() >= town.getRank().getMaxClaims() && town.getRank().getMaxClaims() != 0) {
+                player.sendMessage(Messages.TOWN_CLAIM_LIMIT_REACHED.format(town.getRank(), town.getRank().getMaxClaims()));
+                return;
             }
+
 
             TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
             if (townBlock.getTownId() > 0) {

@@ -48,7 +48,7 @@ public enum Messages {
     TOWN_INVITE_NOT_INVITED("%prefix% &cVous n'avez pas été invité dans la ville &4{0} &c!"),
     TOWN_INVITE_ACCEPTED("%prefix% &aLe joueur &e{0} &afait désormais parti de votre ville !"),
 
-    TOWN_CLAIM_CAMPEMENT_LIMIT_REACHED("%prefix% &cVous avez atteint votre limite ce claim en tant que Campement: &4{0} claims maximum&c."),
+    TOWN_CLAIM_LIMIT_REACHED("%prefix% &cVous avez atteint votre limite ce claim en tant que {0}: &4{1} claims maximum&c."),
     TOWN_CLAIM_ALREADY_OWNED("%prefix% &cCe claim est déjà possédé par la ville &4{0} &c!"),
     TOWN_CLAIM_CLAIMED("%prefix% &aVous avez claim le chunk &ex: {0}, z: {1}&a."),
     TOWN_CLAIM_OUTPOST_CLAIMED("%prefix% &aVous avez claim le chunk &ex: {0}, z: {1}&a en tant qu'outpost."),
