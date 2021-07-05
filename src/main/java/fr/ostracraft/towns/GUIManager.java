@@ -3,9 +3,11 @@ package fr.ostracraft.towns;
 import fr.bakaaless.api.inventory.InventoryAPI;
 import fr.ostracraft.towns.commands.TownCommand;
 import fr.ostracraft.towns.types.Resident;
+import fr.ostracraft.towns.types.ResidentRank;
 import fr.ostracraft.towns.types.Town;
 import fr.ostracraft.towns.types.TownRank;
 import fr.ostracraft.towns.utils.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -14,10 +16,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class GUIManager {
 
@@ -101,7 +102,7 @@ public class GUIManager {
         }, true, event -> {
             if (town == null) return;
             player.closeInventory();
-            player.sendMessage("INDEV");
+            openMembers(player, resident);
         });
         inventory.addItem(5, o -> {
             ItemStack itemStack = new ItemStack(Material.ENCHANTING_TABLE);
@@ -175,6 +176,105 @@ public class GUIManager {
         });
 
         inventory.build(player);
+    }
+
+    public static void openMembers(Player player, Resident resident) {
+        openMembers(player, resident, 0);
+    }
+
+    public static void openMembers(Player player, Resident resident, final int page) {
+        if (resident.getTownId() < 1)
+            return;
+        Comparator<Resident> comparator = new Comparator<Resident>() {
+            @Override
+            public int compare(Resident o1, Resident o2) {
+                return o1.getRank().compareTo(o2.getRank());
+            }
+        };
+        Town town = Town.getTownById(resident.getTownId());
+        assert town != null;
+        List<Resident> residents = town.getResidents();
+        residents.sort(comparator);
+
+        ItemStack border = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta borderMeta = border.getItemMeta();
+        borderMeta.setDisplayName(" ");
+        border.setItemMeta(borderMeta);
+        InventoryAPI inventory = InventoryAPI.create(OstraTowns.get())
+                .setRefresh(true)
+                .setSize(54)
+                .setBorder(border)
+                .setTitle(Messages.TOWN_GUI_TITLE.format("Membres"));
+
+        System.out.println("residents.size() = " + residents.size());
+
+        int[] slots = {
+                10, 11, 12, 13, 14, 15, 16,
+                19, 20, 21, 22, 23, 24, 25,
+                28, 29, 30, 31, 32, 33, 34,
+                37, 38, 39, 40, 41, 42, 43
+        };
+
+        if (residents.size() > slots.length) {
+            ItemStack prev = new ItemStack(Material.ARROW);
+            ItemMeta prevMeta = prev.getItemMeta();
+            prevMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Précédent"));
+            prev.setItemMeta(prevMeta);
+
+            ItemStack next = new ItemStack(Material.ARROW);
+            ItemMeta nextMeta = prev.getItemMeta();
+            nextMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Suivant"));
+            next.setItemMeta(nextMeta);
+
+            if (page > 0)
+                inventory.addItem(48, prev, true, event -> {
+                    openMembers(player, resident, page - 1);
+                });
+            if ((page + 1) * slots.length < residents.size())
+                inventory.addItem(50, next, true, event -> {
+                    openMembers(player, resident, page + 1);
+                });
+        }
+
+        List<Resident> toShow = residents.subList(page * slots.length, residents.size());
+        toShow.sort(comparator);
+
+        for (int i = 0; i < toShow.size(); i++) {
+            if (i >= slots.length)
+                break;
+            int slot = slots[i];
+            Resident currentResident = toShow.get(i);
+            inventory.addItem(slot, o -> {
+                ResidentRank currentRank = currentResident.getRank();
+                ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
+                SkullMeta itemMeta = ((SkullMeta) itemStack.getItemMeta());
+                itemMeta.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(currentResident.getUuid())));
+                itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format(currentResident.getUsername()));
+                List<String> lore = new ArrayList<>();
+                lore.add(Messages.TOWN_GUI_LORE.format("&aGrade actuel: &c" + currentRank));
+                lore.add(Messages.TOWN_GUI_LORE.format("&eClic gauche: &aPromouvoir"));
+                lore.add(Messages.TOWN_GUI_LORE.format("&eClic droit: &aRétrograder"));
+                itemMeta.setLore(lore);
+                itemStack.setItemMeta(itemMeta);
+                return itemStack;
+            }, true, event -> {
+                ResidentRank currentRank = currentResident.getRank();
+                if (event.isLeftClick()) {
+                    ResidentRank residentRank = ResidentRank.values()[currentRank.ordinal() - 1];
+                    if (residentRank == null)
+                        return;
+                    TownCommand.SubCommandExecutor.PERMISSION.getExecutor().accept(player, resident, Arrays.asList("set", currentResident.getUsername(), residentRank.toString()));
+                } else if (event.isRightClick()) {
+                    ResidentRank residentRank = ResidentRank.values()[currentRank.ordinal() + 1];
+                    if (residentRank == null)
+                        return;
+                    TownCommand.SubCommandExecutor.PERMISSION.getExecutor().accept(player, resident, Arrays.asList("set", currentResident.getUsername(), residentRank.toString()));
+                }
+            });
+        }
+
+        inventory.build(player);
+
     }
 
     public static void openCreate(Player player, Resident resident) {

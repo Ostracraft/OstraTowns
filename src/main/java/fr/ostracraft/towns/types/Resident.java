@@ -152,6 +152,17 @@ public class Resident {
         return false;
     }
 
+    public ResidentRank getRank() {
+        ResidentRank rank = ResidentRank.NOUVEAU;
+        if(this.isMayor())
+            rank = ResidentRank.MAIRE;
+        if(this.isAssistant())
+            rank = ResidentRank.ASSISTANT;
+        if(this.isMember())
+            rank = ResidentRank.MEMBRE;
+        return rank;
+    }
+
     @Override
     public String toString() {
         return "Resident{" +
