@@ -80,7 +80,7 @@ public class Resident {
     public static void fetchAllResidents() {
         List<DatabaseResponse> responses = DatabaseManager.getAll("SELECT * FROM `" + Config.DB_PREFIX.get() + "residents`");
         for (DatabaseResponse response : responses) {
-            if(loadedResidents.containsKey(response.<String>get("uuid")))
+            if (loadedResidents.containsKey(response.<String>get("uuid")))
                 continue;
             Resident resident = new Resident(
                     response.get("uuid"),

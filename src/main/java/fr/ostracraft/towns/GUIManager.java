@@ -22,7 +22,7 @@ import java.util.List;
 public class GUIManager {
 
     public static void openSettings(Player player, Resident resident) {
-        if((!resident.isMayor() && !resident.isAssistant()) || resident.getTownId() < 1)
+        if ((!resident.isMayor() && !resident.isAssistant()) || resident.getTownId() < 1)
             return;
         Town town = Town.getTownById(resident.getTownId());
         assert town != null;

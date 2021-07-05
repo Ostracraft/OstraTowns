@@ -51,7 +51,7 @@ public class TownSettings {
 
     public static TownSettings fromString(String input) {
         String[] list = input.split("#");
-        if(list.length < 3)
+        if (list.length < 3)
             return new TownSettings();
         boolean pvp = list[0].equalsIgnoreCase("true");
         boolean fire = list[1].equalsIgnoreCase("true");

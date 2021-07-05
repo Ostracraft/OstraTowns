@@ -234,7 +234,7 @@ public class Town {
         List<Resident> residents = new ArrayList<>();
         Resident.fetchAllResidents();
         for (Resident resident : Resident.getLoadedResidents().values()) {
-            if(resident.getTownId() == getId())
+            if (resident.getTownId() == getId())
                 residents.add(resident);
         }
         return residents;

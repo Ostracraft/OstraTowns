@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class StringUtil {
 
     public static String colored(String input) {
-        if(Bukkit.getVersion().contains("1.16")) {
+        if (Bukkit.getVersion().contains("1.16")) {
             Pattern pattern = Pattern.compile("#[a-fA-F-0-9]{6}");
             Matcher matcher = pattern.matcher(input);
             while (matcher.find()) {

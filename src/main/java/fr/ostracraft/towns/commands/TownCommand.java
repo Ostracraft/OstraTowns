@@ -674,16 +674,16 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(Messages.TOWN_TELEPORTED.format());
         }),
         SETSPAWN((player, resident, subArgs) -> {
-            if(resident.getTownId() < 1) {
+            if (resident.getTownId() < 1) {
                 player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
                 return;
             }
-            if(!resident.isMayor()) {
+            if (!resident.isMayor()) {
                 player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MAIRE));
                 return;
             }
             TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
-            if(townBlock.getTownId() != resident.getTownId()) {
+            if (townBlock.getTownId() != resident.getTownId()) {
                 String owner = Town.getTownById(townBlock.getTownId()) == null ? "Territoire libre" : Town.getTownById(townBlock.getTownId()).getName();
                 player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(owner));
                 return;
@@ -694,14 +694,14 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(Messages.TOWN_SETTING_UPDATED.format("Spawn"));
         }),
         SPAWN((player, resident, subArgs) -> {
-            if(subArgs.size() < 1) {
-                if(resident.getTownId() < 1) {
+            if (subArgs.size() < 1) {
+                if (resident.getTownId() < 1) {
                     player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
                     return;
                 }
                 Town town = Town.getTownById(resident.getTownId());
                 assert town != null;
-                if(town.getSpawn() == null) {
+                if (town.getSpawn() == null) {
                     player.sendMessage(Messages.TOWN_SETTING_NO_SPAWN.format(town.getName()));
                     return;
                 }
@@ -709,11 +709,11 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage(Messages.TOWN_TELEPORTED.format());
             } else {
                 Town town = Town.getTownNamed(subArgs.get(0));
-                if(town == null) {
+                if (town == null) {
                     player.sendMessage(Messages.TOWN_NOT_EXISTS.format(subArgs.get(0)));
                     return;
                 }
-                if(town.getSpawn() == null || (town.getId() != resident.getTownId() && !town.getSettings().isPublicSpawn())) {
+                if (town.getSpawn() == null || (town.getId() != resident.getTownId() && !town.getSettings().isPublicSpawn())) {
                     player.sendMessage(Messages.TOWN_SETTING_NO_SPAWN.format(town.getName()));
                     return;
                 }

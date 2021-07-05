@@ -25,7 +25,7 @@ public class InventoryUtil {
         Material material = itemStack.getType();
         int removeRemaining = amount;
         for (ItemStack content : inventory.getContents()) {
-            if(content == null) continue;
+            if (content == null) continue;
             if (!content.getType().equals(material)) continue;
             removeRemaining = amount - removed;
             if (content.getAmount() < removeRemaining) {

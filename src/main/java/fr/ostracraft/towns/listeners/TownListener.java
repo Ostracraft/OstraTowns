@@ -184,12 +184,12 @@ public class TownListener implements Listener {
             return;
         Town town = Town.getTownById(townBlock.getTownId());
         assert town != null;
-        if(!town.getSettings().isFire())
+        if (!town.getSettings().isFire())
             ((Cancellable) event).setCancelled(true);
 
-        if(BlockIgniteEvent.class.isAssignableFrom(event.getClass()) && !town.getSettings().isFire()) {
-            if(((BlockIgniteEvent) event).isCancelled()) {
-                if(((BlockIgniteEvent) event).getIgnitingEntity() instanceof Player player)
+        if (BlockIgniteEvent.class.isAssignableFrom(event.getClass()) && !town.getSettings().isFire()) {
+            if (((BlockIgniteEvent) event).isCancelled()) {
+                if (((BlockIgniteEvent) event).getIgnitingEntity() instanceof Player player)
                     player.sendMessage(Messages.TOWN_SETTING_FIRE_DISABLED.format(town.getName()));
             }
         }

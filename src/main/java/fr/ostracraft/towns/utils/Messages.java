@@ -78,8 +78,7 @@ public enum Messages {
     TOWN_SETTING_GUI_SPAWN("&6» &aSpawn public: {0}"),
 
     TOWN_UPGRADE_GUI_NAME("&6» {0}"),
-    TOWN_UPGRADE_GUI_LORE("&6- &a{0}")
-    ;
+    TOWN_UPGRADE_GUI_LORE("&6- &a{0}");
 
 
     private String value;
