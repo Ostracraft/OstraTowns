@@ -5,18 +5,12 @@ import fr.ostracraft.towns.commands.TownCommand;
 import fr.ostracraft.towns.types.Resident;
 import fr.ostracraft.towns.types.Town;
 import fr.ostracraft.towns.types.TownRank;
-import fr.ostracraft.towns.utils.Config;
-import fr.ostracraft.towns.utils.InventoryUtil;
-import fr.ostracraft.towns.utils.Messages;
-import fr.ostracraft.towns.utils.StringUtil;
-import org.bukkit.Bukkit;
+import fr.ostracraft.towns.utils.*;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -186,9 +180,18 @@ public class GUIManager {
     public static void openCreate(Player player, Resident resident) {
         if (resident.getTownId() > 0)
             return;
-        Inventory inventory = Bukkit.createInventory(null, InventoryType.ANVIL, StringUtil.colored("&1Créer une ville"));
-
-        player.openInventory(inventory);
+        ItemStack paper = new ItemStack(Material.NAME_TAG);
+        ItemMeta paperMeta = paper.getItemMeta();
+        paperMeta.setDisplayName("Nom");
+        paper.setItemMeta(paperMeta);
+        AnvilGUI anvilGUI = new AnvilGUI(OstraTowns.get(), StringUtil.colored("&1Créer une ville"), paper);
+        anvilGUI.onClick((event, s) -> {
+            if(s != null) {
+                player.closeInventory();
+                TownCommand.SubCommandExecutor.CREATION.getExecutor().accept(player, resident, Collections.singletonList(s));
+            }
+        });
+        anvilGUI.open(player);
     }
 
     public static void openSettings(Player player, Resident resident) {
