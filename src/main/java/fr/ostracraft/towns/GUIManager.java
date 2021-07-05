@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,7 +28,8 @@ public class GUIManager {
 
         InventoryAPI inventory = InventoryAPI.create(OstraTowns.get())
                 .setRefresh(true)
-                .setSize(27);
+                .setSize(27)
+                .setTitle(Messages.TOWN_GUI_TITLE.format("Paramètres"));
 
         ItemStack border = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta borderMeta = border.getItemMeta();
