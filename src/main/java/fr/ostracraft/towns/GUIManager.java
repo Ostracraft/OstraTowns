@@ -1,15 +1,22 @@
 package fr.ostracraft.towns;
 
 import fr.bakaaless.api.inventory.InventoryAPI;
+import fr.ostracraft.towns.commands.TownCommand;
 import fr.ostracraft.towns.types.Resident;
 import fr.ostracraft.towns.types.Town;
 import fr.ostracraft.towns.types.TownRank;
+import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.InventoryUtil;
 import fr.ostracraft.towns.utils.Messages;
+import fr.ostracraft.towns.utils.StringUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,6 +26,170 @@ import java.util.Collections;
 import java.util.List;
 
 public class GUIManager {
+
+    public static void openMain(Player player, Resident resident) {
+        Town town = Town.getTownById(resident.getTownId());
+
+        InventoryAPI inventory = InventoryAPI.create(OstraTowns.get())
+                .setSize(18)
+                .setTitle(Messages.TOWN_GUI_TITLE.format("Menu principal"));
+
+        inventory.addItem(9, o -> {
+            ItemStack itemStack = new ItemStack(Material.PAPER);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Créer une ville"));
+            List<String> lore = new ArrayList<>();
+            if (town == null)
+                lore.add(Messages.TOWN_GUI_LORE.format("Cela vous coûtera " + Config.TOWN_CREATION_PRICE.get() + " pixels"));
+            else
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous êtes déjà dans une ville !"));
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if (town != null) return;
+            player.closeInventory();
+            GUIManager.openCreate(player, resident);
+        });
+        inventory.addItem(1, o -> {
+            ItemStack itemStack = new ItemStack(Material.SHIELD);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Claim un chunk"));
+            List<String> lore = new ArrayList<>();
+            if (town == null) {
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
+            } else {
+                lore.add(Messages.TOWN_GUI_LORE.format("&eClic gauche&a: Claim classique (" + Config.TOWN_CLAIM_PRICE.get() + " pixels" + ")"));
+                lore.add(Messages.TOWN_GUI_LORE.format("&eClic droit&a: Claim outpost (" + Config.TOWN_OUTPOST_PRICE.get() + " pixels" + ")"));
+            }
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if (town == null) return;
+            player.closeInventory();
+            List<String> subArgs;
+            if (event.getClick().equals(ClickType.RIGHT))
+                subArgs = Collections.singletonList("outpost");
+            else
+                subArgs = Collections.emptyList();
+            TownCommand.SubCommandExecutor.CLAIM.getExecutor().accept(player, resident, subArgs);
+        });
+        inventory.addItem(11, o -> {
+            ItemStack itemStack = new ItemStack(Material.BARRIER);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Unclaim un chunk"));
+            List<String> lore = new ArrayList<>();
+            if (town == null)
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
+            else
+                lore.add(Messages.TOWN_GUI_LORE.format("Vous ne serez &nPAS&a remboursé"));
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if (town == null) return;
+            player.closeInventory();
+            TownCommand.SubCommandExecutor.UNCLAIM.getExecutor().accept(player, resident, Collections.emptyList());
+        });
+        inventory.addItem(3, o -> {
+            ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Gestion des membres"));
+            List<String> lore = new ArrayList<>();
+            if (town == null)
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
+            else
+                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez pour accéder au sous-menu"));
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if (town == null) return;
+            player.closeInventory();
+            player.sendMessage("INDEV");
+        });
+        inventory.addItem(5, o -> {
+            ItemStack itemStack = new ItemStack(Material.ENCHANTING_TABLE);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Ventes de plots"));
+            List<String> lore = new ArrayList<>();
+            if (town == null)
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
+            else
+                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez pour accéder au sous-menu"));
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if (town == null) return;
+            player.closeInventory();
+            player.sendMessage("INDEV");
+        });
+        inventory.addItem(15, o -> {
+            ItemStack itemStack = new ItemStack(Material.EMERALD);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Améliorations"));
+            List<String> lore = new ArrayList<>();
+            if (town == null)
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
+            else
+                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez pour accéder au sous-menu"));
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if (town == null) return;
+            player.closeInventory();
+            TownCommand.SubCommandExecutor.UPGRADE.getExecutor().accept(player, resident, Collections.emptyList());
+        });
+        inventory.addItem(7, o -> {
+            ItemStack itemStack = new ItemStack(Material.OAK_SIGN);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Paramètres de ville"));
+            List<String> lore = new ArrayList<>();
+            if (town == null)
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
+            else
+                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez pour accéder au sous-menu"));
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if (town == null) return;
+            player.closeInventory();
+            TownCommand.SubCommandExecutor.SETTINGS.getExecutor().accept(player, resident, Collections.emptyList());
+        });
+        inventory.addItem(17, o -> {
+            ItemStack itemStack = new ItemStack(Material.TNT);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Supprimer la ville"));
+            List<String> lore = new ArrayList<>();
+            if (town == null) {
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
+            } else {
+                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez ici pour supprimer la ville (Confirmation demandée)"));
+                lore.add(Messages.TOWN_GUI_LORE.format("&4/!\\ ATTENTION: &cAction irréversible"));
+            }
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if (town == null) return;
+            player.closeInventory();
+            TownCommand.SubCommandExecutor.DELETE.getExecutor().accept(player, resident, Collections.emptyList());
+        });
+
+        inventory.build(player);
+    }
+
+    public static void openCreate(Player player, Resident resident) {
+        if (resident.getTownId() > 0)
+            return;
+        Inventory inventory = Bukkit.createInventory(null, InventoryType.ANVIL, StringUtil.colored("&1Créer une ville"));
+
+        player.openInventory(inventory);
+    }
 
     public static void openSettings(Player player, Resident resident) {
         if ((!resident.isMayor() && !resident.isAssistant()) || resident.getTownId() < 1)
@@ -95,10 +266,10 @@ public class GUIManager {
             ItemStack itemStack = new ItemStack(Material.DIRT);
             ItemMeta itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
-            itemMeta.setDisplayName(Messages.TOWN_UPGRADE_GUI_NAME.format(TownRank.CAMPEMENT.getPrefix()));
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format(TownRank.CAMPEMENT.getPrefix()));
             if (town.getRank().getPriority() >= TownRank.CAMPEMENT.getPriority())
                 itemMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
-            List<String> lore = Collections.singletonList(Messages.TOWN_UPGRADE_GUI_LORE.format("&oPOSSÉDÉ"));
+            List<String> lore = Collections.singletonList(Messages.TOWN_GUI_LORE.format("&oPOSSÉDÉ"));
             itemMeta.setLore(lore);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             itemStack.setItemMeta(itemMeta);
@@ -110,15 +281,15 @@ public class GUIManager {
             ItemStack itemStack = new ItemStack(Material.IRON_BLOCK);
             ItemMeta itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
-            itemMeta.setDisplayName(Messages.TOWN_UPGRADE_GUI_NAME.format(TownRank.BOURG.getPrefix()));
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format(TownRank.BOURG.getPrefix()));
             List<String> lore;
             if (town.getRank().getPriority() >= TownRank.BOURG.getPriority()) {
                 itemMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
-                lore = Collections.singletonList(Messages.TOWN_UPGRADE_GUI_LORE.format("&oPOSSÉDÉ"));
+                lore = Collections.singletonList(Messages.TOWN_GUI_LORE.format("&oPOSSÉDÉ"));
             } else {
                 lore = new ArrayList<>();
                 for (ItemStack stack : TownRank.BOURG.getPrice()) {
-                    lore.add(Messages.TOWN_UPGRADE_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
+                    lore.add(Messages.TOWN_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
                 }
             }
             itemMeta.setLore(lore);
@@ -149,15 +320,15 @@ public class GUIManager {
             ItemStack itemStack = new ItemStack(Material.GOLD_BLOCK);
             ItemMeta itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
-            itemMeta.setDisplayName(Messages.TOWN_UPGRADE_GUI_NAME.format(TownRank.VILLAGE.getPrefix()));
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format(TownRank.VILLAGE.getPrefix()));
             List<String> lore;
             if (town.getRank().getPriority() >= TownRank.VILLAGE.getPriority()) {
                 itemMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
-                lore = Collections.singletonList(Messages.TOWN_UPGRADE_GUI_LORE.format("&oPOSSÉDÉ"));
+                lore = Collections.singletonList(Messages.TOWN_GUI_LORE.format("&oPOSSÉDÉ"));
             } else {
                 lore = new ArrayList<>();
                 for (ItemStack stack : TownRank.VILLAGE.getPrice()) {
-                    lore.add(Messages.TOWN_UPGRADE_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
+                    lore.add(Messages.TOWN_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
                 }
             }
             itemMeta.setLore(lore);
@@ -188,15 +359,15 @@ public class GUIManager {
             ItemStack itemStack = new ItemStack(Material.DIAMOND_BLOCK);
             ItemMeta itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
-            itemMeta.setDisplayName(Messages.TOWN_UPGRADE_GUI_NAME.format(TownRank.CITY.getPrefix()));
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format(TownRank.CITY.getPrefix()));
             List<String> lore;
             if (town.getRank().getPriority() >= TownRank.CITY.getPriority()) {
                 itemMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
-                lore = Collections.singletonList(Messages.TOWN_UPGRADE_GUI_LORE.format("&oPOSSÉDÉ"));
+                lore = Collections.singletonList(Messages.TOWN_GUI_LORE.format("&oPOSSÉDÉ"));
             } else {
                 lore = new ArrayList<>();
                 for (ItemStack stack : TownRank.CITY.getPrice()) {
-                    lore.add(Messages.TOWN_UPGRADE_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
+                    lore.add(Messages.TOWN_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
                 }
             }
             itemMeta.setLore(lore);
@@ -227,15 +398,15 @@ public class GUIManager {
             ItemStack itemStack = new ItemStack(Material.EMERALD_BLOCK);
             ItemMeta itemMeta = itemStack.getItemMeta();
             assert itemMeta != null;
-            itemMeta.setDisplayName(Messages.TOWN_UPGRADE_GUI_NAME.format(TownRank.KINGDOM.getPrefix()));
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format(TownRank.KINGDOM.getPrefix()));
             List<String> lore;
             if (town.getRank().getPriority() >= TownRank.KINGDOM.getPriority()) {
                 itemMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
-                lore = Collections.singletonList(Messages.TOWN_UPGRADE_GUI_LORE.format("&oPOSSÉDÉ"));
+                lore = Collections.singletonList(Messages.TOWN_GUI_LORE.format("&oPOSSÉDÉ"));
             } else {
                 lore = new ArrayList<>();
                 for (ItemStack stack : TownRank.KINGDOM.getPrice()) {
-                    lore.add(Messages.TOWN_UPGRADE_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
+                    lore.add(Messages.TOWN_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
                 }
             }
             itemMeta.setLore(lore);

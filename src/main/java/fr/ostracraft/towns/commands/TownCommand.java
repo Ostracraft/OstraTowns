@@ -29,14 +29,13 @@ public class TownCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(Messages.EXECUTABLE_BY_PLAYER.format());
             return true;
         }
-        Player player = ((Player) sender);
         Resident resident = Resident.getResident(player);
         if (args.length == 0) {
-            player.sendMessage("TOWN INFO");
+            GUIManager.openMain(player, resident);
             return true;
         }
         String subCommand = args[0];
