@@ -48,6 +48,8 @@ public class Town {
     public static Town getTownById(int id) {
         if (loadedTowns.containsKey(id))
             return loadedTowns.get(id);
+        if (id == 0)
+            return null;
         DatabaseResponse response = DatabaseManager.get("SELECT * FROM `" + Config.DB_PREFIX.get() + "towns` WHERE `id`=?", id);
         if (response == null)
             return null;
