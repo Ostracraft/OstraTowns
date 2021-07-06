@@ -158,6 +158,18 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 break;
             }
 
+            case "sell":
+            case "vendre": {
+                SubCommandExecutor.SELL.getExecutor().accept(player, resident, subArgs);
+                break;
+            }
+
+            case "buy":
+            case "acheter": {
+                SubCommandExecutor.BUY.getExecutor().accept(player, resident, subArgs);
+                break;
+            }
+
             default: {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue"));
                 break;
@@ -744,6 +756,82 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 return;
             }
             GUIManager.openUpgrades(player, resident);
+        }),
+        SELL((player, resident, subArgs) -> {
+            if(resident.getTownId() < 1) {
+                player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+                return;
+            }
+            if(!resident.isMayor() && !resident.isAssistant()) {
+                player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.ASSISTANT));
+                return;
+            }
+            TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
+            if(townBlock.getTownId() != resident.getTownId()) {
+                Town town = Town.getTownById(townBlock.getTownId());
+                player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town == null ? "Territoire libre" : town.getName()));
+                return;
+            }
+            if(townBlock.getOwned().trim().length() > 0) {
+                OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(townBlock.getOwned()));
+                player.sendMessage(Messages.TOWN_SELL_ALREADY_SOLD.format(owner.getName()));
+                return;
+            }
+            if(subArgs.size() < 1) {
+                player.sendMessage(Messages.INVALID_ARGUMENTS.format("Merci de préciser le prix à payer pour ce claim."));
+                return;
+            }
+            int price = Integer.parseInt(subArgs.get(0));
+            townBlock.setPrice(price < 1 ? 0 : price);
+            if(price < 1) {
+                player.sendMessage(Messages.TOWN_SELL_CLAIM_RETIRED_FROM_SALE.format());
+            } else {
+                player.sendMessage(Messages.TOWN_SELL_CLAIM_ON_SALE.format(price));
+            }
+        }),
+        BUY((player, resident, subArgs) -> {
+//            if(resident.getTownId() < 1) {
+//                player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
+//                return;
+//            }
+            TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
+            if(townBlock.getTownId() == resident.getTownId()) {
+                Town town = Town.getTownById(townBlock.getTownId());
+                player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(town.getName()));
+                return;
+            }
+            if(townBlock.getOwned().trim().length() > 0) {
+                OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(townBlock.getOwned()));
+                player.sendMessage(Messages.TOWN_SELL_ALREADY_SOLD.format(owner.getName()));
+                return;
+            }
+            if(townBlock.getPrice() < 1) {
+                player.sendMessage(Messages.TOWN_SELL_CLAIM_NOT_ON_SELL.format());
+                return;
+            }
+            if(OstraTowns.getEconomy().getBalance(player) < townBlock.getPrice()) {
+                player.sendMessage(Messages.TOWN_CLAIM_NOT_ENOUGH_MONEY.format(townBlock.getPrice()));
+                return;
+            }
+            player.sendMessage(Messages.TOWN_BUY_PRICE.format(townBlock.getPrice()));
+            ConfirmManager.add(player, () -> {
+                if(townBlock.getPrice() < 1) {
+                    player.sendMessage(Messages.TOWN_SELL_CLAIM_NOT_ON_SELL.format());
+                    return;
+                }
+                if(townBlock.getOwned().trim().length() > 0) {
+                    OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(townBlock.getOwned()));
+                    player.sendMessage(Messages.TOWN_SELL_ALREADY_SOLD.format(owner.getName()));
+                    return;
+                }
+                if(OstraTowns.getEconomy().getBalance(player) < townBlock.getPrice()) {
+                    player.sendMessage(Messages.TOWN_CLAIM_NOT_ENOUGH_MONEY.format(townBlock.getPrice()));
+                    return;
+                }
+                OstraTowns.getEconomy().withdrawPlayer(player, townBlock.getPrice());
+                townBlock.setOwned(player.getUniqueId().toString());
+                player.sendMessage(Messages.TOWN_BUY_SUCCESS.format(townBlock.getX(), townBlock.getZ(), townBlock.getPrice()));
+            });
         });
 
         private final TriConsumer<Player, Resident, List<String>> executor;

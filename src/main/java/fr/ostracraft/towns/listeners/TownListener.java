@@ -86,6 +86,8 @@ public class TownListener implements Listener {
             return;
         }
         if (townBlock.getTownId() != resident.getTownId()) {
+            if (townBlock.getOwned().trim().length() > 1 && townBlock.getOwned().equalsIgnoreCase(player.getUniqueId().toString()))
+                return;
             player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town.getName()));
             event.setCancelled(true);
             return;
@@ -115,12 +117,15 @@ public class TownListener implements Listener {
             return;
         }
         if (townBlock.getTownId() != resident.getTownId()) {
+            if (townBlock.getOwned().trim().length() > 1 && townBlock.getOwned().equalsIgnoreCase(player.getUniqueId().toString()))
+                return;
             player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town.getName()));
             event.setCancelled(true);
             return;
         }
         if (resident.isMayor() || resident.isAssistant() || resident.isMember())
             return;
+
         for (Material material : blockedTypes) {
             if (block.getType().equals(material)) {
                 player.sendMessage(Messages.TOWN_RANK_INSUFFICIENT.format(ResidentRank.MEMBRE));
@@ -146,6 +151,8 @@ public class TownListener implements Listener {
             return;
         }
         if (townBlock.getTownId() != resident.getTownId()) {
+            if (townBlock.getOwned().trim().length() > 1 && townBlock.getOwned().equalsIgnoreCase(player.getUniqueId().toString()))
+                return;
             player.sendMessage(Messages.TOWN_NOT_YOUR_CLAIM.format(town.getName()));
             event.setCancelled(true);
             return;

@@ -23,13 +23,17 @@ public class TownBlock {
     private final String world;
     private int townId;
     private boolean outpost;
+    private int price;
+    private String owned;
 
-    public TownBlock(int x, int z, String world, int townId, boolean outpost) {
+    public TownBlock(int x, int z, String world, int townId, boolean outpost, int price, String owned) {
         this.x = x;
         this.z = z;
         this.world = world;
         this.townId = townId;
         this.outpost = outpost;
+        this.price = price;
+        this.owned = owned;
     }
 
     public static TownBlock getTownBlockAt(Location location) {
@@ -38,7 +42,7 @@ public class TownBlock {
         if (isCached(chunk.getX(), chunk.getZ())) {
             return getFromCache(chunk.getX(), chunk.getZ());
         }
-        return new TownBlock(chunk.getX(), chunk.getZ(), location.getWorld().getName(), 0, false);
+        return new TownBlock(chunk.getX(), chunk.getZ(), location.getWorld().getName(), 0, false, 0, "");
     }
 
     public static boolean isCached(int x, int z) {
@@ -60,7 +64,9 @@ public class TownBlock {
                     response.get("z"),
                     response.get("world"),
                     response.get("townId"),
-                    response.get("outpost")
+                    response.get("outpost"),
+                    response.get("price"),
+                    response.get("owned")
             );
             townBlock.cache();
         }
@@ -156,6 +162,36 @@ public class TownBlock {
 
     public Chunk getChunk() {
         return getWorld().getChunkAt(getX(), getZ());
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public TownBlock setPrice(int price) {
+        this.price = price;
+
+        if (isCached(getX(), getZ())) {
+            DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `price`=? WHERE `x`=? AND `z`=?", price, getX(), getZ());
+        }
+        this.refresh();
+
+        return this;
+    }
+
+    public String getOwned() {
+        return owned;
+    }
+
+    public TownBlock setOwned(String owned) {
+        this.owned = owned;
+
+        if (isCached(getX(), getZ())) {
+            DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `owned`=? WHERE `x`=? AND `z`=?", owned, getX(), getZ());
+        }
+        this.refresh();
+
+        return this;
     }
 
     @Override

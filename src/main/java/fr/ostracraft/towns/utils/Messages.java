@@ -78,6 +78,13 @@ public enum Messages {
     TOWN_SETTING_GUI_PVP("&6» &aPVP: {0}"),
     TOWN_SETTING_GUI_FIRE("&6» &aFeu: {0}"),
     TOWN_SETTING_GUI_SPAWN("&6» &aSpawn public: {0}"),
+
+    TOWN_SELL_ALREADY_SOLD("%prefix% &cCe claim est déjà vendu, il appartient à &4{0} &c!"),
+    TOWN_SELL_CLAIM_NOT_ON_SELL("%prefix% &cCe claim n'est pas à vendre !"),
+    TOWN_SELL_CLAIM_ON_SALE("%prefix% &aCe claim est désormais en vente pour le prix de &e{0} pixels&a."),
+    TOWN_SELL_CLAIM_RETIRED_FROM_SALE("%prefix% &aCe claim n'est plus disponible à la vente."),
+    TOWN_BUY_PRICE("%prefix% &aCe claim coûte &e{0} pixels&a."),
+    TOWN_BUY_SUCCESS("%prefix% &aVous avez bien acheté le claim &ex: {0}, z: {1} &aau prix de &e{2} pixels&a."),
     ;
 
 
