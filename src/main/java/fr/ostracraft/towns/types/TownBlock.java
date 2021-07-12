@@ -66,7 +66,7 @@ public class TownBlock {
                     response.get("townId"),
                     response.get("outpost"),
                     response.get("price"),
-                    response.get("owned")
+                    response.isSet("owned") && (response.get("owned") != null) ? response.get("owned") : ""
             );
             townBlock.cache();
         }

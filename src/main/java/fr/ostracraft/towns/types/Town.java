@@ -54,9 +54,11 @@ public class Town {
         if (response == null)
             return null;
         List<String> assistants = new ArrayList<>();
-        Collections.addAll(assistants, response.<String>get("assistants").split("#"));
+        if (response.isSet("assistants") && response.get("assistants") != null)
+            Collections.addAll(assistants, response.<String>get("assistants").split("#"));
         List<String> members = new ArrayList<>();
-        Collections.addAll(members, response.<String>get("members").split("#"));
+        if (response.isSet("members") && response.get("members") != null)
+            Collections.addAll(members, response.<String>get("members").split("#"));
         TownRank rank;
         try {
             rank = TownRank.valueOf(response.<String>get("rank").toUpperCase());
@@ -69,9 +71,9 @@ public class Town {
                 response.get("mayor"),
                 assistants,
                 members,
-                StringUtil.stringToLocation(response.get("spawn")),
+                StringUtil.stringToLocation(response.get("spawn") != null ? response.get("spawn") : ""),
                 rank,
-                TownSettings.fromString(response.get("settings")),
+                TownSettings.fromString(response.get("settings") != null ? response.get("settings") : ""),
                 response.get("creation")
         );
         loadedTowns.put(town.getId(), town);
@@ -86,9 +88,11 @@ public class Town {
         if (loadedTowns.containsKey(response.<Integer>get("id")))
             return loadedTowns.get(response.<Integer>get("id"));
         List<String> assistants = new ArrayList<>();
-        Collections.addAll(assistants, response.<String>get("assistants").split("#"));
+        if (response.isSet("assistants") && response.get("assistants") != null)
+            Collections.addAll(assistants, response.<String>get("assistants").split("#"));
         List<String> members = new ArrayList<>();
-        Collections.addAll(members, response.<String>get("members").split("#"));
+        if (response.isSet("members") && response.get("members") != null)
+            Collections.addAll(members, response.<String>get("members").split("#"));
         TownRank rank = TownRank.valueOf(response.<String>get("rank").toUpperCase());
         Town town = new Town(
                 response.get("id"),
@@ -96,9 +100,9 @@ public class Town {
                 response.get("mayor"),
                 assistants,
                 members,
-                StringUtil.stringToLocation(response.get("spawn")),
+                StringUtil.stringToLocation(response.get("spawn") != null ? response.get("spawn") : ""),
                 rank,
-                TownSettings.fromString(response.get("settings")),
+                TownSettings.fromString(response.get("settings") != null ? response.get("settings") : ""),
                 response.get("creation")
         );
         loadedTowns.put(town.getId(), town);
