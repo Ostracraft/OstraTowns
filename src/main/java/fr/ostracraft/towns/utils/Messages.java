@@ -85,6 +85,9 @@ public enum Messages {
     TOWN_SELL_CLAIM_RETIRED_FROM_SALE("%prefix% &aCe claim n'est plus disponible à la vente."),
     TOWN_BUY_PRICE("%prefix% &aCe claim coûte &e{0} pixels&a."),
     TOWN_BUY_SUCCESS("%prefix% &aVous avez bien acheté le claim &ex: {0}, z: {1} &aau prix de &e{2} pixels&a."),
+    TOWN_RESELL_ANNOUNCE("%prefix% &cVous allez revendre cette parcelle, vous ne serez &4pas &cremboursé !"),
+    TOWN_RESELL_SUCCESS("%prefix% &aVous avez revendu la parcelle &ex: {0}, z: {1}&a."),
+    TOWN_RESELL_NOT_OWED("%prefix% &cCette parcelle ne vous appartient pas !"),
     ;
 
 

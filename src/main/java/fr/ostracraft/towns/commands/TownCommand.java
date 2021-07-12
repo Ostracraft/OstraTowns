@@ -170,6 +170,12 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 break;
             }
 
+            case "resell":
+            case "revendre": {
+                SubCommandExecutor.RESELL.getExecutor().accept(player, resident, subArgs);
+                break;
+            }
+
             default: {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue"));
                 break;
@@ -790,13 +796,10 @@ public class TownCommand implements CommandExecutor, TabCompleter {
             }
         }),
         BUY((player, resident, subArgs) -> {
-//            if(resident.getTownId() < 1) {
-//                player.sendMessage(Messages.TOWN_NOT_IN_TOWN.format());
-//                return;
-//            }
             TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
             if(townBlock.getTownId() == resident.getTownId()) {
                 Town town = Town.getTownById(townBlock.getTownId());
+                assert town != null;
                 player.sendMessage(Messages.TOWN_CLAIM_ALREADY_OWNED.format(town.getName()));
                 return;
             }
@@ -832,7 +835,25 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 townBlock.setOwned(player.getUniqueId().toString());
                 player.sendMessage(Messages.TOWN_BUY_SUCCESS.format(townBlock.getX(), townBlock.getZ(), townBlock.getPrice()));
             });
+        }),
+        RESELL((player, resident, subArgs) -> {
+            TownBlock townBlock = TownBlock.getTownBlockAt(player.getLocation());
+
+            if(!townBlock.getOwned().equalsIgnoreCase(player.getUniqueId().toString())) {
+                player.sendMessage(Messages.TOWN_RESELL_NOT_OWED.format());
+                return;
+            }
+            player.sendMessage(Messages.TOWN_RESELL_ANNOUNCE.format());
+            ConfirmManager.add(player, () -> {
+                if(!townBlock.getOwned().equalsIgnoreCase(player.getUniqueId().toString())) {
+                    player.sendMessage(Messages.TOWN_RESELL_NOT_OWED.format());
+                    return;
+                }
+                townBlock.setOwned("");
+                player.sendMessage(Messages.TOWN_RESELL_SUCCESS.format(townBlock.getX(), townBlock.getZ()));
+            });
         });
+
 
         private final TriConsumer<Player, Resident, List<String>> executor;
 
