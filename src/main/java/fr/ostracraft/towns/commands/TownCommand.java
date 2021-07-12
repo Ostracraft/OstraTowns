@@ -143,36 +143,42 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 break;
             }
 
+            // Settings
             case "settings":
             case "parametres": {
                 SubCommandExecutor.SETTINGS.getExecutor().accept(player, resident, subArgs);
                 break;
             }
 
+            // Upgrade
             case "upgrade":
             case "ameliorer": {
                 SubCommandExecutor.UPGRADE.getExecutor().accept(player, resident, subArgs);
                 break;
             }
 
+            // Sell
             case "sell":
             case "vendre": {
                 SubCommandExecutor.SELL.getExecutor().accept(player, resident, subArgs);
                 break;
             }
 
+            // Buy
             case "buy":
             case "acheter": {
                 SubCommandExecutor.BUY.getExecutor().accept(player, resident, subArgs);
                 break;
             }
 
+            // Resel
             case "resell":
             case "revendre": {
                 SubCommandExecutor.RESELL.getExecutor().accept(player, resident, subArgs);
                 break;
             }
 
+            // Unknown
             default: {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Sous-commande inconnue"));
                 break;
@@ -185,7 +191,7 @@ public class TownCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("claim", "confirm", "create", "delete", "invite", "kick", "leave", "outpost", "permission", "setspawn", "settings", "spawn", "unclaim", "upgrade");
+            return Arrays.asList("buy", "claim", "confirm", "create", "delete", "here", "information", "invite", "join", "kick", "leave", "outpost", "permission", "resell", "sell", "setspawn", "settings", "spawn", "unclaim", "upgrade");
         } else {
             String currentArg = args[0];
             if (currentArg.equalsIgnoreCase("kick") ||
