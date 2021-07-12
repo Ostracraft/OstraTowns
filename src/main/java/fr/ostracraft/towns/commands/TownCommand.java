@@ -9,10 +9,7 @@ import fr.ostracraft.towns.utils.Config;
 import fr.ostracraft.towns.utils.Messages;
 import fr.ostracraft.towns.utils.TriConsumer;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -787,7 +784,14 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Merci de préciser le prix à payer pour ce claim."));
                 return;
             }
-            int price = Integer.parseInt(subArgs.get(0));
+            int price;
+            try {
+                price = Integer.parseInt(subArgs.get(0));
+            } catch (NumberFormatException exception) {
+                player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le prix n'est pas valide ! Ce doit être un nombre sans virgule. Ex: 500, 875"));
+                player.playSound(player.getLocation(), Sound.ENTITY_WITHER_HURT, 1, 1);
+                return;
+            }
             townBlock.setPrice(price < 1 ? 0 : price);
             if(price < 1) {
                 player.sendMessage(Messages.TOWN_SELL_CLAIM_RETIRED_FROM_SALE.format());

@@ -109,17 +109,13 @@ public class GUIManager {
             ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Ventes de plots"));
             List<String> lore = new ArrayList<>();
-            if (town == null)
-                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
-            else
-                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez pour accéder au sous-menu"));
+            lore.add(Messages.TOWN_GUI_LORE.format("Cliquez pour accéder au sous-menu"));
             itemMeta.setLore(lore);
             itemStack.setItemMeta(itemMeta);
             return itemStack;
         }, true, event -> {
-            if (town == null) return;
             player.closeInventory();
-            player.sendMessage("INDEV");
+            openSelling(player, resident);
         });
         inventory.addItem(15, o -> {
             ItemStack itemStack = new ItemStack(Material.EMERALD);
@@ -173,6 +169,87 @@ public class GUIManager {
             if (town == null) return;
             player.closeInventory();
             TownCommand.SubCommandExecutor.DELETE.getExecutor().accept(player, resident, Collections.emptyList());
+        });
+
+        inventory.build(player);
+    }
+
+    public static void openSelling(Player player, Resident resident) {
+        Town town = Town.getTownById(resident.getTownId());
+        InventoryAPI inventory = InventoryAPI.create(OstraTowns.get())
+                .setRefresh(true)
+                .setSize(27)
+                .setTitle(Messages.TOWN_GUI_TITLE.format("Vente de plots"));
+
+        ItemStack border = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta borderMeta = border.getItemMeta();
+        assert borderMeta != null;
+        borderMeta.setDisplayName(" ");
+        border.setItemMeta(borderMeta);
+        inventory.setBorder(border);
+
+        inventory.addItem(11, o -> {
+            ItemStack itemStack = new ItemStack(Material.DIAMOND);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            assert itemMeta != null;
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Mettre en vente ce plot"));
+            List<String> lore = new ArrayList<>();
+            if (town == null) {
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
+            } else if (!resident.isMayor() && !resident.isAssistant()) {
+                lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'avez pas le grade requis: &4" + ResidentRank.ASSISTANT));
+            } else {
+                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez ici pour mettre en vente le plot"));
+                lore.add(Messages.TOWN_GUI_LORE.format("Définissez le prix à 0 pour le retirer de la vente"));
+            }
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, event -> {
+            if(town == null || (!resident.isMayor() && !resident.isAssistant()))
+                return;
+            player.closeInventory();
+            ItemStack leftItem = new ItemStack(Material.DIAMOND);
+            ItemMeta leftItemMeta = leftItem.getItemMeta();
+            assert leftItemMeta != null;
+            leftItemMeta.setDisplayName(" ");
+            leftItem.setItemMeta(leftItemMeta);
+            AnvilGUI anvilGUI = new AnvilGUI(OstraTowns.get(), StringUtil.colored("&1Entrez le prix"), leftItem);
+            anvilGUI.onClick((inventoryClickEvent, s) -> {
+                player.closeInventory();
+                TownCommand.SubCommandExecutor.SELL.getExecutor().accept(player, resident, Collections.singletonList(s.trim()));
+            });
+            anvilGUI.open(player);
+        });
+        inventory.addItem(13, o -> {
+            ItemStack itemStack = new ItemStack(Material.EMERALD);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            assert itemMeta != null;
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Acheter le plot"));
+            List<String> lore = new ArrayList<>();
+            lore.add(Messages.TOWN_GUI_LORE.format("Cliquez ici pour acheter"));
+            lore.add(Messages.TOWN_GUI_LORE.format("ce plot à une autre ville."));
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, inventoryClickEvent -> {
+            player.closeInventory();
+            TownCommand.SubCommandExecutor.BUY.getExecutor().accept(player, resident, Collections.emptyList());
+        });
+        inventory.addItem(15, o -> {
+            ItemStack itemStack = new ItemStack(Material.BARRIER);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            assert itemMeta != null;
+            itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format("Revendre le plot"));
+            List<String> lore = new ArrayList<>();
+            lore.add(Messages.TOWN_GUI_LORE.format("Cliquez ici pour revendre un"));
+            lore.add(Messages.TOWN_GUI_LORE.format("plot acheté à une autre ville."));
+            itemMeta.setLore(lore);
+            itemStack.setItemMeta(itemMeta);
+            return itemStack;
+        }, true, inventoryClickEvent -> {
+            player.closeInventory();
+            TownCommand.SubCommandExecutor.RESELL.getExecutor().accept(player, resident, Collections.emptyList());
         });
 
         inventory.build(player);
