@@ -6,16 +6,17 @@ plugins {
 }
 
 group 'fr.ostracraft.towns'
-version '1.0'
+version '1.1'
 
-def mcVersion = '1.16'
-def subVersion = '.5'
+def mcVersion = '1.17'
+def subVersion = ''
 
 repositories {
     mavenCentral()
     mavenLocal()
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://jitpack.io' }
+    maven { url = 'https://repo.codemc.io/repository/maven-snapshots/' }
 }
 
 dependencies {
@@ -24,18 +25,21 @@ dependencies {
     shadow group: 'com.github.MilkBowl', name: 'VaultAPI', version: '1.7'
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
     implementation group: 'com.github.BakaAless', name: 'InventoryAPI', version: '841732733'
+    implementation group: 'net.wesjd', name: 'anvilgui', version: '1.5.1-SNAPSHOT'
 }
 
 shadowJar {
     dependencies {
         include dependency(group: 'com.github.BakaAless', name: 'InventoryAPI')
         include dependency(group: 'com.zaxxer', name: 'HikariCP')
+        include dependency(group: 'net.wesjd', name: 'anvilgui')
     }
 
     archiveName 'OstraTowns.jar'
     setLibsDirName '..\\out'
     relocate 'com.zaxxer.hikari', 'fr.ostracraft.towns.libs.hikari'
     relocate 'fr.bakaaless.api.inventory', 'fr.ostracraft.towns.libs.inventoryapi'
+    relocate 'net.wesjd.anvilgui', 'fr.ostracraft.towns.libs.anvilgui'
 }
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 

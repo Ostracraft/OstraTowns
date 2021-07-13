@@ -2,11 +2,12 @@ package fr.ostracraft.towns;
 
 import fr.bakaaless.api.inventory.InventoryAPI;
 import fr.ostracraft.towns.commands.TownCommand;
-import fr.ostracraft.towns.types.Resident;
-import fr.ostracraft.towns.types.ResidentRank;
-import fr.ostracraft.towns.types.Town;
-import fr.ostracraft.towns.types.TownRank;
-import fr.ostracraft.towns.utils.*;
+import fr.ostracraft.towns.types.*;
+import fr.ostracraft.towns.utils.Config;
+import fr.ostracraft.towns.utils.InventoryUtil;
+import fr.ostracraft.towns.utils.Messages;
+import fr.ostracraft.towns.utils.StringUtil;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -206,7 +207,7 @@ public class GUIManager {
             itemStack.setItemMeta(itemMeta);
             return itemStack;
         }, true, event -> {
-            if(town == null || (!resident.isMayor() && !resident.isAssistant()))
+            if (town == null || (!resident.isMayor() && !resident.isAssistant()))
                 return;
             player.closeInventory();
             ItemStack leftItem = new ItemStack(Material.DIAMOND);
@@ -214,12 +215,16 @@ public class GUIManager {
             assert leftItemMeta != null;
             leftItemMeta.setDisplayName(" ");
             leftItem.setItemMeta(leftItemMeta);
-            AnvilGUI anvilGUI = new AnvilGUI(OstraTowns.get(), StringUtil.colored("&1Entrez le prix"), leftItem);
-            anvilGUI.onClick((inventoryClickEvent, s) -> {
-                player.closeInventory();
-                TownCommand.SubCommandExecutor.SELL.getExecutor().accept(player, resident, Collections.singletonList(s.trim()));
+
+            AnvilGUI.Builder builder = new AnvilGUI.Builder();
+            builder.plugin(OstraTowns.get());
+            builder.itemLeft(leftItem);
+            builder.title(StringUtil.colored("&1Entrez le prix"));
+            builder.onComplete((eventPlayer, text) -> {
+                TownCommand.SubCommandExecutor.SELL.getExecutor().accept(player, resident, Collections.singletonList(text.trim()));
+                return AnvilGUI.Response.close();
             });
-            anvilGUI.open(player);
+            builder.open(player);
         });
         inventory.addItem(13, o -> {
             ItemStack itemStack = new ItemStack(Material.EMERALD);
@@ -359,16 +364,19 @@ public class GUIManager {
             return;
         ItemStack paper = new ItemStack(Material.NAME_TAG);
         ItemMeta paperMeta = paper.getItemMeta();
+        assert paperMeta != null;
         paperMeta.setDisplayName("Nom");
         paper.setItemMeta(paperMeta);
-        AnvilGUI anvilGUI = new AnvilGUI(OstraTowns.get(), StringUtil.colored("&1Créer une ville"), paper);
-        anvilGUI.onClick((event, s) -> {
-            if(s != null) {
-                player.closeInventory();
-                TownCommand.SubCommandExecutor.CREATION.getExecutor().accept(player, resident, Collections.singletonList(s));
-            }
+
+        AnvilGUI.Builder builder = new AnvilGUI.Builder();
+        builder.plugin(OstraTowns.get());
+        builder.itemLeft(paper);
+        builder.title(StringUtil.colored("&1Créer une ville"));
+        builder.onComplete((eventPlayer, text) -> {
+            TownCommand.SubCommandExecutor.CREATION.getExecutor().accept(player, resident, Collections.singletonList(text.trim()));
+            return AnvilGUI.Response.close();
         });
-        anvilGUI.open(player);
+        builder.open(player);
     }
 
     public static void openSettings(Player player, Resident resident) {
