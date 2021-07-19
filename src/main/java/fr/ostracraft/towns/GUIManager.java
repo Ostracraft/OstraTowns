@@ -160,7 +160,8 @@ public class GUIManager {
             if (town == null) {
                 lore.add(Messages.TOWN_GUI_LORE.format("&cVous n'êtes pas dans une ville !"));
             } else {
-                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez ici pour supprimer la ville (Confirmation demandée)"));
+                lore.add(Messages.TOWN_GUI_LORE.format("Cliquez ici pour supprimer"));
+                lore.add(" la ville (Confirmation demandée)");
                 lore.add(Messages.TOWN_GUI_LORE.format("&4/!\\ ATTENTION: &cAction irréversible"));
             }
             itemMeta.setLore(lore);
