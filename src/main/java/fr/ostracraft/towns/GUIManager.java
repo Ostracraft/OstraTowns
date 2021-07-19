@@ -458,7 +458,11 @@ public class GUIManager {
             itemMeta.setDisplayName(Messages.TOWN_GUI_NAME.format(TownRank.CAMPEMENT.getPrefix()));
             if (town.getRank().getPriority() >= TownRank.CAMPEMENT.getPriority())
                 itemMeta.addEnchant(Enchantment.ARROW_INFINITE, 1, true);
-            List<String> lore = Collections.singletonList(Messages.TOWN_GUI_LORE.format("&oPOSSÉDÉ"));
+            List<String> lore = new ArrayList<>();
+            lore.add(Messages.TOWN_GUI_LORE.format("&oPOSSÉDÉ"));
+            lore.add(" ");
+            lore.add(Messages.TOWN_GUI_LORE.format("Claims max: &e" + TownRank.CAMPEMENT.getMaxClaims()));
+            lore.add(Messages.TOWN_GUI_LORE.format("Outposts max: &e" + TownRank.CAMPEMENT.getMaxOutposts()));
             itemMeta.setLore(lore);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             itemStack.setItemMeta(itemMeta);
@@ -480,6 +484,10 @@ public class GUIManager {
                 for (ItemStack stack : TownRank.BOURG.getPrice()) {
                     lore.add(Messages.TOWN_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
                 }
+                lore.add(" ");
+                lore.add(Messages.TOWN_GUI_LORE.format("Claims max: &e" + TownRank.BOURG.getMaxClaims()));
+                lore.add(Messages.TOWN_GUI_LORE.format("Outposts max: &e" + TownRank.BOURG.getMaxOutposts()));
+                lore.add(Messages.TOWN_GUI_LORE.format("Possibilité d'inviter/gérer d'autres membres"));
             }
             itemMeta.setLore(lore);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -519,6 +527,9 @@ public class GUIManager {
                 for (ItemStack stack : TownRank.VILLAGE.getPrice()) {
                     lore.add(Messages.TOWN_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
                 }
+                lore.add(" ");
+                lore.add(Messages.TOWN_GUI_LORE.format("Claims max: &e" + TownRank.VILLAGE.getMaxClaims()));
+                lore.add(Messages.TOWN_GUI_LORE.format("Outposts max: &e" + TownRank.VILLAGE.getMaxOutposts()));
             }
             itemMeta.setLore(lore);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -558,6 +569,9 @@ public class GUIManager {
                 for (ItemStack stack : TownRank.CITY.getPrice()) {
                     lore.add(Messages.TOWN_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
                 }
+                lore.add(" ");
+                lore.add(Messages.TOWN_GUI_LORE.format("Claims max: &e" + TownRank.CITY.getMaxClaims()));
+                lore.add(Messages.TOWN_GUI_LORE.format("Outposts max: &e" + TownRank.CITY.getMaxOutposts()));
             }
             itemMeta.setLore(lore);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -597,6 +611,9 @@ public class GUIManager {
                 for (ItemStack stack : TownRank.KINGDOM.getPrice()) {
                     lore.add(Messages.TOWN_GUI_LORE.format(stack.getType().toString().replaceAll("_", " ")) + " x" + stack.getAmount());
                 }
+                lore.add(" ");
+                lore.add(Messages.TOWN_GUI_LORE.format("Claims max: &e" + TownRank.KINGDOM.getMaxClaims()));
+                lore.add(Messages.TOWN_GUI_LORE.format("Outposts max: &e" + TownRank.KINGDOM.getMaxOutposts()));
             }
             itemMeta.setLore(lore);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
