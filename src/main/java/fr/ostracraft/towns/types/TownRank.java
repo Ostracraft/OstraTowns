@@ -9,15 +9,15 @@ import java.util.Collections;
 import java.util.List;
 
 public enum TownRank {
-    CAMPEMENT(0, "#B65B00CAMPEMENT", 9, 1, Collections.emptyList()),
-    BOURG(1, "#C3C3C3BOURG", 50, 3, Collections.singletonList(
+    CAMPEMENT(0, "#B65B00CAMPEMENT", 1, 1, Collections.emptyList()),
+    BOURG(1, "#C3C3C3BOURG", 12, 1, Collections.singletonList(
             new ItemStack(Material.DIAMOND_BLOCK, 10)
     )),
-    VILLAGE(2, "#FFE020VILLAGE", 150, 4, Arrays.asList(
+    VILLAGE(2, "#FFE020VILLAGE", 22, 2, Arrays.asList(
             new ItemStack(Material.DIAMOND_BLOCK, 32),
             new ItemStack(Material.NETHERITE_INGOT)
     )),
-    CITY(3, "#37DADBVILLE", 0, 5, Arrays.asList(
+    CITY(3, "#37DADBVILLE", 150, 4, Arrays.asList(
             new ItemStack(Material.DIAMOND_BLOCK, 64),
             new ItemStack(Material.NETHERITE_BLOCK, 5)
     )),
