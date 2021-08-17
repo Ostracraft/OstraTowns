@@ -226,8 +226,8 @@ public class TownCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage(Messages.TOWN_ALREADY_IN_TOWN.format());
                 return;
             }
-            String name = subArgs.get(0);
-            if(name.trim().length() < 1) {
+            String name = subArgs.get(0).replaceAll("\\s+","");
+            if(name.length() < 1) {
                 player.sendMessage(Messages.INVALID_ARGUMENTS.format("Le nom spécifié est trop court"));
                 return;
             }

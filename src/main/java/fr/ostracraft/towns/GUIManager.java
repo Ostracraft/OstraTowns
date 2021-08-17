@@ -222,7 +222,7 @@ public class GUIManager {
             builder.itemLeft(leftItem);
             builder.title(StringUtil.colored("&1Entrez le prix"));
             builder.onComplete((eventPlayer, text) -> {
-                TownCommand.SubCommandExecutor.SELL.getExecutor().accept(player, resident, Collections.singletonList(text.trim()));
+                TownCommand.SubCommandExecutor.SELL.getExecutor().accept(player, resident, Collections.singletonList(text));
                 return AnvilGUI.Response.close();
             });
             builder.open(player);
