@@ -39,20 +39,20 @@ public class TownBlock {
     public static TownBlock getTownBlockAt(Location location) {
         assert location.getWorld() != null;
         Chunk chunk = location.getWorld().getChunkAt(location);
-        if (isCached(chunk.getX(), chunk.getZ())) {
-            return getFromCache(chunk.getX(), chunk.getZ());
+        if (isCached(chunk.getX(), chunk.getZ(), chunk.getWorld().getName())) {
+            return getFromCache(chunk.getX(), chunk.getZ(), chunk.getWorld().getName());
         }
         return new TownBlock(chunk.getX(), chunk.getZ(), location.getWorld().getName(), 0, false, 0, "");
     }
 
-    public static boolean isCached(int x, int z) {
-        return loadedBlocks.containsKey(x + ":" + z);
+    public static boolean isCached(int x, int z, String world) {
+        return loadedBlocks.containsKey(x + ":" + z + ":" + world);
     }
 
     @Nullable
-    public static TownBlock getFromCache(int x, int z) {
-        if (isCached(x, z))
-            return loadedBlocks.get(x + ":" + z);
+    public static TownBlock getFromCache(int x, int z, String world) {
+        if (isCached(x, z, world))
+            return loadedBlocks.get(x + ":" + z + ":" + world);
         return null;
     }
 
@@ -85,13 +85,13 @@ public class TownBlock {
     }
 
     public void cache() {
-        if (!isCached(getX(), getZ()))
-            loadedBlocks.put(getX() + ":" + getZ(), this);
+        if (!isCached(getX(), getZ(), getWorldName()))
+            loadedBlocks.put(getX() + ":" + getZ() + ":" + getWorldName(), this);
     }
 
     public void removeFromCache() {
-        if (isCached(getX(), getZ())) {
-            loadedBlocks.remove(getX() + ":" + getZ());
+        if (isCached(getX(), getZ(), getWorldName())) {
+            loadedBlocks.remove(getX() + ":" + getZ() + ":" + getWorldName());
         }
     }
 
@@ -129,7 +129,7 @@ public class TownBlock {
             return this;
         }
 
-        if (isCached(getX(), getZ())) {
+        if (isCached(getX(), getZ(), getWorldName())) {
             DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `townId`=? WHERE `x`=? AND `z`=?", townId, getX(), getZ());
         } else {
             DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `world`, `townId`, `outpost`) VALUES(?, ?, ?, ?, ?)", getX(), getZ(), getWorldName(), townId, isOutpost());
@@ -150,7 +150,7 @@ public class TownBlock {
             throw new IllegalStateException("Trying to set an unclaimed chunk as an outpost");
         }
 
-        if (isCached(getX(), getZ())) {
+        if (isCached(getX(), getZ(), getWorldName())) {
             DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `outpost`=? WHERE `x`=? AND `z`=?", outpost, getX(), getZ());
         } else {
             DatabaseManager.send("INSERT INTO `" + Config.DB_PREFIX.get() + "townblocks`(`x`, `z`, `world`, `townId`, `outpost`) VALUES(?, ?, ?, ?)", getX(), getZ(), getWorldName(), getTownId(), outpost);
@@ -171,7 +171,7 @@ public class TownBlock {
     public TownBlock setPrice(int price) {
         this.price = price;
 
-        if (isCached(getX(), getZ())) {
+        if (isCached(getX(), getZ(), getWorldName())) {
             DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `price`=? WHERE `x`=? AND `z`=?", price, getX(), getZ());
         }
         this.refresh();
@@ -186,7 +186,7 @@ public class TownBlock {
     public TownBlock setOwned(String owned) {
         this.owned = owned;
 
-        if (isCached(getX(), getZ())) {
+        if (isCached(getX(), getZ(), getWorldName())) {
             DatabaseManager.send("UPDATE `" + Config.DB_PREFIX.get() + "townblocks` SET `owned`=? WHERE `x`=? AND `z`=?", owned, getX(), getZ());
         }
         this.refresh();
